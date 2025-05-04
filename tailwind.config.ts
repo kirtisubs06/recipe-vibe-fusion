@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,12 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				recipe: {
+					primary: '#FF5A5F',
+					mint: '#00B27D',
+					yellow: '#FFD166',
+					purple: '#6B5DDF',
 				}
 			},
 			borderRadius: {
@@ -84,11 +91,31 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'card-swipe-right': {
+					'0%': { transform: 'translateX(0) rotate(0)' },
+					'100%': { transform: 'translateX(150%) rotate(10deg)' }
+				},
+				'card-swipe-left': {
+					'0%': { transform: 'translateX(0) rotate(0)' },
+					'100%': { transform: 'translateX(-150%) rotate(-10deg)' }
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-10px)' }
+				},
+				'pulse-soft': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.7' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'card-swipe-right': 'card-swipe-right 0.5s ease-out forwards',
+				'card-swipe-left': 'card-swipe-left 0.5s ease-out forwards',
+				'float': 'float 6s ease-in-out infinite',
+				'pulse-soft': 'pulse-soft 2s ease-in-out infinite'
 			}
 		}
 	},
