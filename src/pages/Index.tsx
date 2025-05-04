@@ -2,25 +2,36 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import RecipeCard from '@/components/RecipeCard';
-import VibeSelection from '@/components/VibeSelection';
 import { mockRecipes } from '@/data/mockRecipes';
 import NavBar from '@/components/NavBar';
 import { useNavigate } from 'react-router-dom';
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { Button } from "@/components/ui/button";
+import { Check, X } from "lucide-react";
 
 const Index = () => {
-  const [selectedVibe, setSelectedVibe] = useState<string | null>(null);
+  const [selectedCuisine, setSelectedCuisine] = useState<string | null>(null);
   const [selectedDiet, setSelectedDiet] = useState<string | null>(null);
   const navigate = useNavigate();
   
+  const cuisines = [
+    { id: 'italian', name: 'Italian', image: 'https://images.unsplash.com/photo-1498579150354-977475b7ea0b?q=80&w=2070&auto=format&fit=crop' },
+    { id: 'chinese', name: 'Chinese', image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?q=80&w=1992&auto=format&fit=crop' },
+    { id: 'mexican', name: 'Mexican', image: 'https://images.unsplash.com/photo-1613514785940-daed07799d9b?q=80&w=2070&auto=format&fit=crop' },
+    { id: 'indian', name: 'Indian', image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=2036&auto=format&fit=crop' },
+    { id: 'japanese', name: 'Japanese', image: 'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?q=80&w=1964&auto=format&fit=crop' },
+    { id: 'thai', name: 'Thai', image: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?q=80&w=2070&auto=format&fit=crop' },
+  ];
+  
   // Mock query that would normally fetch from an API
   const { data: recipes = [] } = useQuery({
-    queryKey: ['recipes', selectedVibe, selectedDiet],
+    queryKey: ['recipes', selectedCuisine, selectedDiet],
     queryFn: () => {
       // Simulate API filtering
       return mockRecipes.filter(recipe => {
-        const matchesVibe = !selectedVibe || recipe.vibes.includes(selectedVibe);
+        const matchesCuisine = !selectedCuisine || recipe.cuisine === selectedCuisine;
         const matchesDiet = !selectedDiet || recipe.dietaryInfo.includes(selectedDiet);
-        return matchesVibe && matchesDiet;
+        return matchesCuisine && matchesDiet;
       });
     },
   });
@@ -39,13 +50,27 @@ const Index = () => {
     navigate(`/recipe/${id}`);
   };
   
-  const handleVibeSelect = (vibes: string[]) => {
-    // For simplicity, we'll just use the first selected vibe
-    setSelectedVibe(vibes.length > 0 ? vibes[0] : null);
+  const handleCuisineSelect = (cuisine: string) => {
+    setSelectedCuisine(cuisine);
+  };
+  
+  const [currentCuisineIndex, setCurrentCuisineIndex] = useState(0);
+  
+  const handleSwipeRight = () => {
+    handleCuisineSelect(cuisines[currentCuisineIndex].id);
+    if (currentCuisineIndex < cuisines.length - 1) {
+      setCurrentCuisineIndex(currentCuisineIndex + 1);
+    }
+  };
+  
+  const handleSwipeLeft = () => {
+    if (currentCuisineIndex < cuisines.length - 1) {
+      setCurrentCuisineIndex(currentCuisineIndex + 1);
+    }
   };
   
   return (
-    <div className="flex flex-col min-h-screen pb-16">
+    <div className="flex flex-col min-h-screen pb-16 bg-cheffy-olive">
       {/* Header with Logo */}
       <div className="pt-6 pb-4 px-4 text-center">
         <div className="flex items-center justify-center gap-2">
@@ -61,27 +86,88 @@ const Index = () => {
         </div>
       </div>
       
-      {/* Vibe and Diet Selections */}
+      {/* Cuisine Swipe Cards */}
       <div className="px-4 mb-4">
-        <VibeSelection 
-          onVibeSelect={handleVibeSelect}
-        />
+        <h2 className="text-2xl font-bold mb-6 text-center text-cheffy-cream">
+          What cuisine are you craving?
+        </h2>
+        <div className="relative h-[400px]">
+          {currentCuisineIndex < cuisines.length && (
+            <div className="absolute inset-0">
+              <div className="w-full h-full relative bg-card rounded-2xl overflow-hidden shadow-xl">
+                <img 
+                  src={cuisines[currentCuisineIndex].image} 
+                  alt={cuisines[currentCuisineIndex].name} 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                  <div className="w-full p-6">
+                    <h3 className="text-3xl font-bold text-white mb-4">
+                      {cuisines[currentCuisineIndex].name}
+                    </h3>
+                    
+                    <div className="flex justify-between mt-4">
+                      <Button 
+                        variant="destructive" 
+                        size="lg" 
+                        className="rounded-full w-16 h-16" 
+                        onClick={handleSwipeLeft}
+                      >
+                        <X className="h-8 w-8" />
+                      </Button>
+                      <Button 
+                        size="lg" 
+                        className="rounded-full w-16 h-16 bg-green-500 hover:bg-green-600" 
+                        onClick={handleSwipeRight}
+                      >
+                        <Check className="h-8 w-8" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          {currentCuisineIndex >= cuisines.length && (
+            <div className="flex items-center justify-center h-full bg-card rounded-xl p-8">
+              <div className="text-center">
+                <h3 className="text-2xl font-bold mb-4 text-cheffy-cream">Thanks for your selections!</h3>
+                <p className="text-cheffy-cream/90 mb-4">
+                  We've found some recipes based on your preferences.
+                </p>
+                <Button onClick={() => setCurrentCuisineIndex(0)} className="bg-cheffy-brown">
+                  Choose Again
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       
       {/* Recipe Cards */}
-      <div className="flex-1 px-4 pb-4">
-        <div className="grid grid-cols-1 gap-4">
-          {recipes.map((recipe) => (
-            <RecipeCard 
-              key={recipe.id} 
-              recipe={recipe} 
-              onLike={handleLike}
-              onDislike={handleDislike}
-              onViewDetails={handleViewDetails}
-            />
-          ))}
+      {selectedCuisine && (
+        <div className="flex-1 px-4 pb-4">
+          <h2 className="text-xl font-bold mb-4 text-cheffy-cream">
+            {selectedCuisine.charAt(0).toUpperCase() + selectedCuisine.slice(1)} Recipes
+          </h2>
+          <div className="grid grid-cols-1 gap-4">
+            {recipes.map((recipe) => (
+              <RecipeCard 
+                key={recipe.id} 
+                recipe={recipe} 
+                onLike={handleLike}
+                onDislike={handleDislike}
+                onViewDetails={handleViewDetails}
+              />
+            ))}
+            {recipes.length === 0 && (
+              <div className="text-center p-8 bg-card rounded-xl">
+                <p className="text-cheffy-cream">No recipes found. Try a different cuisine!</p>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
       
       {/* Navigation */}
       <NavBar />

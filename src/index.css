@@ -98,7 +98,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-cheffy-olive text-foreground;
     font-family: 'Poppins', sans-serif;
   }
   
