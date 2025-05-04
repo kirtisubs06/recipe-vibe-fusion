@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import RecipeCard from '@/components/RecipeCard';
 import { mockRecipes } from '@/data/mockRecipes';
@@ -13,12 +13,42 @@ const Index = () => {
   const navigate = useNavigate();
   
   const cuisines = [
-    { id: 'italian', name: 'Italian', image: 'https://images.unsplash.com/photo-1498579150354-977475b7ea0b?q=80&w=2070&auto=format&fit=crop' },
-    { id: 'chinese', name: 'Chinese', image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?q=80&w=1992&auto=format&fit=crop' },
-    { id: 'mexican', name: 'Mexican', image: 'https://images.unsplash.com/photo-1613514785940-daed07799d9b?q=80&w=2070&auto=format&fit=crop' },
-    { id: 'indian', name: 'Indian', image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=2036&auto=format&fit=crop' },
-    { id: 'japanese', name: 'Japanese', image: 'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?q=80&w=1964&auto=format&fit=crop' },
-    { id: 'thai', name: 'Thai', image: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?q=80&w=2070&auto=format&fit=crop' },
+    { 
+      id: 'italian', 
+      name: 'Italian', 
+      image: 'https://images.unsplash.com/photo-1498579150354-977475b7ea0b?q=80&w=2070&auto=format&fit=crop',
+      description: 'Rich tomato sauces, fresh herbs, olive oil, and aged cheeses create savory and aromatic experiences.' 
+    },
+    { 
+      id: 'chinese', 
+      name: 'Chinese', 
+      image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?q=80&w=1992&auto=format&fit=crop',
+      description: 'Bold umami flavors with garlic, ginger, and soy sauce balanced by subtle sweetness.' 
+    },
+    { 
+      id: 'mexican', 
+      name: 'Mexican', 
+      image: 'https://images.unsplash.com/photo-1613514785940-daed07799d9b?q=80&w=2070&auto=format&fit=crop',
+      description: 'Vibrant and zesty with chili peppers, lime, cilantro, and rich spices.' 
+    },
+    { 
+      id: 'indian', 
+      name: 'Indian', 
+      image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=2036&auto=format&fit=crop',
+      description: 'Complex and aromatic with layers of spices like cumin, cardamom, turmeric, and garam masala.' 
+    },
+    { 
+      id: 'japanese', 
+      name: 'Japanese', 
+      image: 'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?q=80&w=1964&auto=format&fit=crop',
+      description: 'Delicate and refined with clean umami flavors from dashi, miso, and fresh seafood.' 
+    },
+    { 
+      id: 'thai', 
+      name: 'Thai', 
+      image: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?q=80&w=2070&auto=format&fit=crop',
+      description: 'Perfect balance of sweet, sour, salty, and spicy with lemongrass, chili, lime, and fish sauce.' 
+    },
   ];
   
   // Mock query that would normally fetch from an API
@@ -55,7 +85,7 @@ const Index = () => {
   const [currentCuisineIndex, setCurrentCuisineIndex] = useState(0);
   const [swipeDirection, setSwipeDirection] = useState<string | null>(null);
   const [touchStartX, setTouchStartX] = useState(0);
-  const [touchEndX, setTouchEndX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   const [dragDistance, setDragDistance] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
   
@@ -63,12 +93,13 @@ const Index = () => {
   
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStartX(e.touches[0].clientX);
+    setIsDragging(true);
     setSwipeDirection(null);
     setDragDistance(0);
   };
   
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (touchStartX === 0) return;
+    if (!isDragging) return;
     
     const currentX = e.touches[0].clientX;
     const distance = currentX - touchStartX;
@@ -88,6 +119,10 @@ const Index = () => {
   };
   
   const handleTouchEnd = () => {
+    if (!isDragging) return;
+    
+    setIsDragging(false);
+    
     if (Math.abs(dragDistance) >= minSwipeDistance) {
       if (dragDistance > 0) {
         // Swiped right - like this cuisine
@@ -107,12 +142,94 @@ const Index = () => {
     }
     
     setTouchStartX(0);
-    setTouchEndX(0);
     setDragDistance(0);
   };
   
+  // Mouse event handlers for desktop support
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setTouchStartX(e.clientX);
+    setIsDragging(true);
+    setSwipeDirection(null);
+    setDragDistance(0);
+    
+    if (cardRef.current) {
+      cardRef.current.style.transition = 'none';
+    }
+  };
+  
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    
+    const currentX = e.clientX;
+    const distance = currentX - touchStartX;
+    setDragDistance(distance);
+    
+    if (cardRef.current) {
+      cardRef.current.style.transform = `translateX(${distance}px) rotate(${distance * 0.05}deg)`;
+      
+      if (distance > 0) {
+        cardRef.current.style.boxShadow = '0 10px 20px rgba(0, 200, 0, 0.2)';
+      } else if (distance < 0) {
+        cardRef.current.style.boxShadow = '0 10px 20px rgba(255, 0, 0, 0.2)';
+      } else {
+        cardRef.current.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
+      }
+    }
+  };
+  
+  const handleMouseUp = () => {
+    if (!isDragging) return;
+    
+    setIsDragging(false);
+    
+    if (Math.abs(dragDistance) >= minSwipeDistance) {
+      if (dragDistance > 0) {
+        // Swiped right - like this cuisine
+        setSwipeDirection('right');
+        handleSwipeRight();
+      } else {
+        // Swiped left - skip this cuisine
+        setSwipeDirection('left');
+        handleSwipeLeft();
+      }
+    } else {
+      // Reset if not swiped far enough
+      if (cardRef.current) {
+        cardRef.current.style.transform = 'translateX(0) rotate(0deg)';
+        cardRef.current.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
+      }
+    }
+    
+    setTouchStartX(0);
+    setDragDistance(0);
+  };
+  
+  // Cleanup mouse events when component unmounts or when dragging stops
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      if (isDragging) {
+        handleMouseUp();
+      }
+    };
+    
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (isDragging) {
+        handleMouseMove(e as unknown as React.MouseEvent);
+      }
+    };
+    
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    window.addEventListener('mousemove', handleGlobalMouseMove);
+    
+    return () => {
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+      window.removeEventListener('mousemove', handleGlobalMouseMove);
+    };
+  }, [isDragging]);
+  
   const handleSwipeRight = () => {
     if (cardRef.current) {
+      cardRef.current.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
       cardRef.current.style.transform = 'translateX(150%) rotate(30deg)';
       cardRef.current.style.opacity = '0';
     }
@@ -129,6 +246,7 @@ const Index = () => {
   
   const handleSwipeLeft = () => {
     if (cardRef.current) {
+      cardRef.current.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
       cardRef.current.style.transform = 'translateX(-150%) rotate(-30deg)';
       cardRef.current.style.opacity = '0';
     }
@@ -188,6 +306,11 @@ const Index = () => {
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
+              onMouseDown={handleMouseDown}
+              style={{
+                transition: 'transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease',
+                cursor: 'grab'
+              }}
             >
               <div className="w-full h-full relative bg-card rounded-2xl overflow-hidden shadow-xl">
                 <img 
@@ -198,9 +321,12 @@ const Index = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
                   <div className="w-full p-6">
-                    <h3 className="text-3xl font-bold text-white mb-4">
+                    <h3 className="text-3xl font-bold text-white mb-2">
                       {cuisines[currentCuisineIndex].name}
                     </h3>
+                    <p className="text-white/90 text-sm mb-4">
+                      {cuisines[currentCuisineIndex].description}
+                    </p>
                     <p className="text-white/90 text-sm">
                       Swipe right to select, swipe left to skip
                     </p>
