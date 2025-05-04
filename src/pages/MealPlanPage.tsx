@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Calendar, Clock, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import NavBar from '@/components/NavBar';
@@ -90,11 +90,24 @@ const MealPlanPage = () => {
     navigate('/shopping-list', { state: { shoppingList } });
   };
 
+  const getDayColor = (index: number) => {
+    const colors = [
+      'bg-recipe-terracota',
+      'bg-recipe-rojo',
+      'bg-recipe-olive',
+      'bg-blue-500',
+      'bg-purple-500',
+      'bg-recipe-terracota',
+      'bg-recipe-sunset'
+    ];
+    return colors[index % colors.length];
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <header className="bg-white shadow-sm p-4">
-        <div className="flex justify-between items-center">
+      <header className="bg-card bg-opacity-50 backdrop-blur-sm shadow-sm p-4">
+        <div className="flex justify-between items-center max-w-md mx-auto">
           <div className="flex items-center">
             <Button 
               variant="ghost" 
@@ -104,12 +117,14 @@ const MealPlanPage = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-2xl font-bold text-recipe-primary">Weekly Meal Plan</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-recipe-terracota to-recipe-rojo bg-clip-text text-transparent">
+              Weekly Meal Plan
+            </h1>
           </div>
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 border-recipe-terracota text-recipe-terracota"
             onClick={handleViewShoppingList}
           >
             <ShoppingCart className="h-4 w-4" />
@@ -118,17 +133,17 @@ const MealPlanPage = () => {
         </div>
       </header>
       
-      <main className="container mx-auto p-4">
+      <main className="container mx-auto p-4 max-w-md">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <div className="w-16 h-16 border-4 border-recipe-primary border-t-transparent rounded-full animate-spin"></div>
-            <p className="mt-4 text-gray-600">Creating your optimized meal plan...</p>
+            <div className="w-16 h-16 border-4 border-recipe-terracota border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p className="text-muted-foreground">Creating your optimized meal plan...</p>
           </div>
         ) : (
           <>
             <div className="mb-6 text-center">
               <h2 className="text-xl font-medium mb-2">Your Weekly Meal Plan</h2>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 We've created a balanced plan with your selected cuisines
               </p>
             </div>
@@ -137,17 +152,17 @@ const MealPlanPage = () => {
               {mealPlan.map((dayPlan, index) => (
                 <div 
                   key={dayPlan.day} 
-                  className="bg-white rounded-lg shadow-md overflow-hidden"
+                  className="bg-card rounded-xl shadow-sm overflow-hidden transition-transform hover:scale-[1.02]"
                 >
                   <div className="flex">
-                    <div className="w-1/4 sm:w-1/5 bg-recipe-primary text-white p-4 flex flex-col items-center justify-center">
+                    <div className={`w-1/4 sm:w-1/5 ${getDayColor(index)} text-white p-4 flex flex-col items-center justify-center`}>
                       <span className="font-bold">{dayPlan.day}</span>
                     </div>
                     <div 
                       className="w-3/4 sm:w-4/5 flex p-3 cursor-pointer"
                       onClick={() => handleViewRecipe(dayPlan.recipe.id)}
                     >
-                      <div className="w-20 h-20 rounded-md overflow-hidden mr-3">
+                      <div className="w-20 h-20 rounded-lg overflow-hidden mr-3">
                         <img 
                           src={dayPlan.recipe.image} 
                           alt={dayPlan.recipe.name}
@@ -156,16 +171,30 @@ const MealPlanPage = () => {
                       </div>
                       <div>
                         <h3 className="font-medium">{dayPlan.recipe.name}</h3>
-                        <p className="text-sm text-gray-600">{dayPlan.recipe.prepTime} • {dayPlan.recipe.servings} servings</p>
-                        <div className="mt-1 flex flex-wrap gap-1">
-                          {dayPlan.recipe.dietaryInfo.map((info: string) => (
+                        <div className="flex items-center text-xs text-muted-foreground gap-3 mt-1">
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            <span>{dayPlan.recipe.prepTime}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Users className="h-3 w-3" />
+                            <span>{dayPlan.recipe.servings} servings</span>
+                          </div>
+                        </div>
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {dayPlan.recipe.dietaryInfo.slice(0, 2).map((info: string) => (
                             <span 
                               key={info} 
-                              className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-full"
+                              className="px-2 py-0.5 bg-recipe-olive/10 text-recipe-olive text-xs rounded-full"
                             >
                               {info}
                             </span>
                           ))}
+                          {dayPlan.recipe.dietaryInfo.length > 2 && (
+                            <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">
+                              +{dayPlan.recipe.dietaryInfo.length - 2}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -177,7 +206,7 @@ const MealPlanPage = () => {
             <div className="mt-8 flex justify-center">
               <Button
                 onClick={handleViewShoppingList}
-                className="bg-recipe-primary hover:bg-recipe-primary/90 w-full max-w-md flex items-center gap-2 justify-center"
+                className="bg-gradient-to-r from-recipe-terracota to-recipe-rojo hover:opacity-90 transition-opacity w-full flex items-center gap-2 justify-center"
               >
                 <ShoppingCart className="h-5 w-5" />
                 View Shopping List

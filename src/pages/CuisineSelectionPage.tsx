@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import NavBar from '@/components/NavBar';
@@ -43,10 +43,10 @@ const CuisineSelectionPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <header className="bg-white shadow-sm p-4">
-        <div className="flex justify-between items-center">
+      <header className="bg-card bg-opacity-50 backdrop-blur-sm shadow-sm p-4">
+        <div className="flex justify-between items-center max-w-md mx-auto">
           <div className="flex items-center">
             <Button 
               variant="ghost" 
@@ -56,30 +56,32 @@ const CuisineSelectionPage = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-2xl font-bold text-recipe-primary">Choose Cuisines</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-recipe-terracota to-recipe-rojo bg-clip-text text-transparent">
+              Choose Cuisines
+            </h1>
           </div>
-          <div className="text-sm text-gray-600">
+          <div className="text-sm font-medium px-3 py-1 bg-recipe-sunset/20 text-recipe-rojo rounded-full">
             {selectedCuisines.length} selected
           </div>
         </div>
       </header>
       
-      <main className="container mx-auto p-4">
+      <main className="container mx-auto p-4 max-w-md">
         <div className="mb-6 text-center">
           <h2 className="text-xl font-medium mb-2">What cuisines do you want this week?</h2>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Select multiple cuisines to create a diverse weekly meal plan
           </p>
         </div>
         
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           {availableCuisines.map((cuisine) => (
             <div
               key={cuisine.id}
               onClick={() => toggleCuisine(cuisine.id)}
-              className={`relative overflow-hidden rounded-lg shadow-md cursor-pointer transition-all ${
+              className={`relative overflow-hidden rounded-xl shadow-md cursor-pointer transition-all ${
                 selectedCuisines.includes(cuisine.id)
-                  ? 'ring-4 ring-recipe-primary scale-95'
+                  ? 'ring-2 ring-recipe-terracota ring-offset-1 scale-95'
                   : 'hover:scale-105'
               }`}
             >
@@ -94,9 +96,9 @@ const CuisineSelectionPage = () => {
                   {cuisine.name}
                 </div>
                 {selectedCuisines.includes(cuisine.id) && (
-                  <div className="absolute inset-0 bg-recipe-primary/20 flex items-center justify-center">
-                    <div className="bg-recipe-primary text-white rounded-full w-8 h-8 flex items-center justify-center">
-                      ✓
+                  <div className="absolute inset-0 bg-recipe-terracota/20 flex items-center justify-center">
+                    <div className="bg-recipe-terracota text-white rounded-full w-8 h-8 flex items-center justify-center">
+                      <Check className="h-5 w-5" />
                     </div>
                   </div>
                 )}
@@ -108,7 +110,7 @@ const CuisineSelectionPage = () => {
         <div className="mt-8 flex justify-center">
           <Button
             onClick={handlePlanMeals}
-            className="bg-recipe-primary hover:bg-recipe-primary/90 w-full max-w-md"
+            className="bg-gradient-to-r from-recipe-terracota to-recipe-rojo hover:opacity-90 transition-opacity w-full"
             disabled={selectedCuisines.length === 0}
           >
             Create Meal Plan

@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Check, Download } from 'lucide-react';
+import { ArrowLeft, Check, Download, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import NavBar from '@/components/NavBar';
@@ -9,8 +9,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from "@/components/ui/table";
 
@@ -71,11 +69,20 @@ const ShoppingListPage = () => {
   
   const checkedCount = Object.values(checkedItems).filter(Boolean).length;
 
+  const getCategoryColor = (category: string) => {
+    switch(category) {
+      case 'Produce': return 'bg-recipe-olive text-white';
+      case 'Meat & Seafood': return 'bg-recipe-rojo text-white';
+      case 'Dairy': return 'bg-recipe-sunset text-recipe-rojo';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <header className="bg-white shadow-sm p-4">
-        <div className="flex justify-between items-center">
+      <header className="bg-card bg-opacity-50 backdrop-blur-sm shadow-sm p-4 sticky top-0 z-10">
+        <div className="flex justify-between items-center max-w-md mx-auto">
           <div className="flex items-center">
             <Button 
               variant="ghost" 
@@ -85,18 +92,20 @@ const ShoppingListPage = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-2xl font-bold text-recipe-primary">Shopping List</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-recipe-terracota to-recipe-rojo bg-clip-text text-transparent">
+              Shopping List
+            </h1>
           </div>
-          <div className="text-sm text-gray-600">
-            {checkedCount}/{rawShoppingList.length} items
+          <div className="text-sm font-medium px-3 py-1 bg-recipe-sunset/20 text-recipe-rojo rounded-full">
+            {checkedCount}/{rawShoppingList.length}
           </div>
         </div>
       </header>
       
-      <main className="container mx-auto p-4">
+      <main className="container mx-auto p-4 max-w-md">
         <div className="mb-6 text-center">
           <h2 className="text-xl font-medium mb-2">Optimized Shopping List</h2>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             We've organized ingredients based on store layout
           </p>
         </div>
@@ -104,38 +113,40 @@ const ShoppingListPage = () => {
         {Object.entries(categorizedItems).map(([category, items]) => 
           items.length > 0 && (
             <div key={category} className="mb-6">
-              <h3 className="text-md font-semibold mb-2 text-gray-700 bg-gray-100 p-2 rounded">
+              <h3 className={`text-md font-semibold mb-2 ${getCategoryColor(category)} px-3 py-2 rounded-md inline-block`}>
                 {category}
               </h3>
-              <Table>
-                <TableBody>
-                  {items.map((item) => (
-                    <TableRow 
-                      key={item}
-                      className={checkedItems[item] ? "bg-gray-50" : ""}
-                    >
-                      <TableCell className="p-2">
-                        <button 
-                          className={`w-6 h-6 rounded-full border ${
-                            checkedItems[item] 
-                              ? 'bg-recipe-primary border-recipe-primary text-white' 
-                              : 'border-gray-300'
-                          } flex items-center justify-center`}
+              <div className="bg-card rounded-xl shadow-sm overflow-hidden">
+                <Table>
+                  <TableBody>
+                    {items.map((item) => (
+                      <TableRow 
+                        key={item}
+                        className={checkedItems[item] ? "bg-muted/30" : ""}
+                      >
+                        <TableCell className="p-2 w-10">
+                          <button 
+                            className={`w-6 h-6 rounded-full ${
+                              checkedItems[item] 
+                                ? 'bg-recipe-terracota border-recipe-terracota text-white' 
+                                : 'border border-gray-300'
+                            } flex items-center justify-center`}
+                            onClick={() => toggleItemCheck(item)}
+                          >
+                            {checkedItems[item] && <Check className="h-3 w-3" />}
+                          </button>
+                        </TableCell>
+                        <TableCell 
+                          className={`p-3 ${checkedItems[item] ? 'line-through text-muted-foreground' : ''}`}
                           onClick={() => toggleItemCheck(item)}
                         >
-                          {checkedItems[item] && <Check className="h-3 w-3" />}
-                        </button>
-                      </TableCell>
-                      <TableCell 
-                        className={`p-2 ${checkedItems[item] ? 'line-through text-gray-400' : ''}`}
-                        onClick={() => toggleItemCheck(item)}
-                      >
-                        {item}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                          {item}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           )
         )}
@@ -143,7 +154,7 @@ const ShoppingListPage = () => {
         <div className="mt-8 flex justify-center">
           <Button
             onClick={handleShare}
-            className="bg-recipe-primary hover:bg-recipe-primary/90 w-full max-w-md flex items-center gap-2 justify-center"
+            className="bg-gradient-to-r from-recipe-terracota to-recipe-rojo hover:opacity-90 transition-opacity w-full flex items-center gap-2 justify-center"
           >
             <Download className="h-5 w-5" />
             Export Shopping List

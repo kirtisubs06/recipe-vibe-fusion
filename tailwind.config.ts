@@ -68,6 +68,10 @@ export default {
 					mint: '#00B27D',
 					yellow: '#FFD166',
 					purple: '#6B5DDF',
+					terracota: '#D08224',
+					rojo: '#AE431E',
+					olive: '#8A8635',
+					sunset: '#EAC891'
 				}
 			},
 			borderRadius: {
