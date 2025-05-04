@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, Receipt, Map, ShoppingCart, User, TrendingUp } from 'lucide-react';
+import { Home, Receipt, Map, ShoppingCart, User } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 const NavBar: React.FC = () => {
@@ -32,9 +32,9 @@ const NavBar: React.FC = () => {
           </Link>
         </div>
         
-        <Link to="/food-mood" className={`nav-link ${isActive('/food-mood') ? 'active' : 'inactive'}`}>
-          <TrendingUp className="h-6 w-6" />
-          <span className="text-xs mt-1 font-medium">Mood</span>
+        <Link to="/shopping-list" className={`nav-link ${isActive('/shopping-list') ? 'active' : 'inactive'}`}>
+          <ShoppingCart className="h-6 w-6" />
+          <span className="text-xs mt-1 font-medium">Shop</span>
         </Link>
         
         <Link to="/profile" className={`nav-link ${isActive('/profile') ? 'active' : 'inactive'}`}>

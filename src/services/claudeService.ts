@@ -1,5 +1,5 @@
-
 import { ParsedReceiptItem } from "@/store/userPreferences";
+import { searchRecipes, SpoonacularRecipe } from "./spoonacularService";
 
 interface GroceryListRequest {
   dietaryPreferences: string[];
@@ -31,11 +31,36 @@ export async function generateOptimizedGroceryList(
   request: GroceryListRequest
 ): Promise<OptimizedGroceryResponse> {
   try {
-    // In a real implementation with Supabase, this would be a secure edge function call
-    // For now, we'll simulate the response
-    
     console.log("Generating optimized grocery list with Claude API...");
     console.log("Input data:", request);
+    
+    // Try to fetch some recipe data from Spoonacular to enhance Claude's recommendations
+    let spoonacularData: SpoonacularRecipe[] = [];
+    
+    try {
+      // For each cuisine, try to get some recipes to inform our grocery list
+      for (const cuisine of request.selectedCuisines) {
+        const dietParams = request.dietaryPreferences.join(',');
+        
+        const searchResults = await searchRecipes({
+          cuisine: cuisine,
+          diet: dietParams,
+          number: 3
+        });
+        
+        if (searchResults.results.length > 0) {
+          spoonacularData = [...spoonacularData, ...searchResults.results];
+        }
+      }
+      
+      console.log("Retrieved Spoonacular data:", spoonacularData);
+    } catch (error) {
+      console.error("Error fetching Spoonacular data:", error);
+      // Continue with Claude even if Spoonacular fails
+    }
+    
+    // In a real implementation with Supabase, this would be a secure edge function call
+    // For now, we'll simulate the response
     
     // Simulate API response delay
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -144,6 +169,45 @@ export async function generateOptimizedGroceryList(
       });
     });
     
+    // Add ingredients from Spoonacular recipes if we have any
+    if (spoonacularData.length > 0) {
+      // Extract unique ingredients from recipe titles and cuisines
+      // In a real implementation, we would use the full ingredient lists
+      // Here we're just simulating with title words as "ingredients"
+      const recipeWords: Set<string> = new Set();
+      
+      spoonacularData.forEach(recipe => {
+        // Extract potential ingredients from title
+        const words = recipe.title
+          .split(' ')
+          .filter(word => word.length > 4) // Only consider longer words as potential ingredients
+          .map(word => word.toLowerCase());
+        
+        words.forEach(word => recipeWords.add(word));
+      });
+      
+      // Add some of these as suggested ingredients
+      const potentialIngredients = Array.from(recipeWords);
+      const selectedIngredients = potentialIngredients
+        .slice(0, Math.min(5, potentialIngredients.length));
+      
+      selectedIngredients.forEach(ingredient => {
+        if (!groceryItems.some(item => 
+            item.item.toLowerCase().includes(ingredient)) && 
+            !request.currentIngredients.some(item => 
+            item.item.toLowerCase().includes(ingredient))) {
+          
+          groceryItems.push({
+            item: ingredient.charAt(0).toUpperCase() + ingredient.slice(1),
+            quantity: "1",
+            category: "Spoonacular Suggestion",
+            estimatedCost: 2.99,
+            versatility: 6
+          });
+        }
+      });
+    }
+    
     // Adjust quantities based on dietary preferences
     if (request.dietaryPreferences.includes('Vegetarian')) {
       // Add more vegetables and plant proteins
@@ -162,7 +226,7 @@ export async function generateOptimizedGroceryList(
     const totalCost = groceryItems.reduce((sum, item) => sum + item.estimatedCost, 0);
     
     // Generate meal ideas based on ingredients and cuisines
-    const mealIdeas = generateMealIdeas(request.selectedCuisines, groceryItems, request.dietaryPreferences);
+    const mealIdeas = generateMealIdeas(request.selectedCuisines, groceryItems, request.dietaryPreferences, spoonacularData);
     
     return {
       groceryList: groceryItems,
@@ -179,126 +243,142 @@ export async function generateOptimizedGroceryList(
 function generateMealIdeas(
   cuisines: string[],
   groceryItems: OptimizedGroceryItem[],
-  dietaryPreferences: string[]
+  dietaryPreferences: string[],
+  spoonacularData: SpoonacularRecipe[] = []
 ) {
   const isVegetarian = dietaryPreferences.includes('Vegetarian');
   const isDairyFree = dietaryPreferences.includes('Dairy Free');
   const isLowCarb = dietaryPreferences.includes('Low Carb');
   
   // Generate meal ideas based on cuisines and ingredients
-  const meals = [];
+  let meals = [];
   
-  // Italian meals
-  if (cuisines.includes('italian')) {
-    if (!isVegetarian) {
+  // First, try to use Spoonacular data if available
+  if (spoonacularData.length > 0) {
+    meals = spoonacularData.map(recipe => {
+      return {
+        name: recipe.title,
+        ingredients: recipe.diets || [], // In real implementation, we'd have ingredient lists
+        cuisineType: recipe.cuisines?.length > 0 ? recipe.cuisines[0] : "Various",
+        mealType: recipe.readyInMinutes < 20 ? "lunch" : "dinner"
+      };
+    });
+  }
+  
+  // If we don't have enough from Spoonacular, add our own suggestions
+  if (meals.length < 3) {
+    // Italian meals
+    if (cuisines.includes('italian')) {
+      if (!isVegetarian) {
+        meals.push({
+          name: "Spaghetti Bolognese",
+          ingredients: ["Pasta", "Ground Beef", "Tomatoes", "Onions", "Garlic", "Olive Oil"],
+          cuisineType: "Italian",
+          mealType: "dinner"
+        });
+      }
+      
       meals.push({
-        name: "Spaghetti Bolognese",
-        ingredients: ["Pasta", "Ground Beef", "Tomatoes", "Onions", "Garlic", "Olive Oil"],
+        name: "Tomato Basil Pasta",
+        ingredients: ["Pasta", "Tomatoes", "Basil", "Garlic", "Olive Oil"],
         cuisineType: "Italian",
-        mealType: "dinner"
+        mealType: "lunch"
       });
     }
     
-    meals.push({
-      name: "Tomato Basil Pasta",
-      ingredients: ["Pasta", "Tomatoes", "Basil", "Garlic", "Olive Oil"],
-      cuisineType: "Italian",
-      mealType: "lunch"
-    });
-  }
-  
-  // Mexican meals
-  if (cuisines.includes('mexican')) {
-    if (!isVegetarian) {
+    // Mexican meals
+    if (cuisines.includes('mexican')) {
+      if (!isVegetarian) {
+        meals.push({
+          name: "Beef Tacos",
+          ingredients: ["Tortillas", "Ground Beef", "Onions", "Tomatoes", "Avocado", "Cilantro"],
+          cuisineType: "Mexican",
+          mealType: "dinner"
+        });
+      }
+      
       meals.push({
-        name: "Beef Tacos",
-        ingredients: ["Tortillas", "Ground Beef", "Onions", "Tomatoes", "Avocado", "Cilantro"],
+        name: "Bean Burritos",
+        ingredients: ["Tortillas", "Beans", "Rice", "Avocado", "Cilantro"],
         cuisineType: "Mexican",
-        mealType: "dinner"
+        mealType: "lunch"
       });
     }
     
-    meals.push({
-      name: "Bean Burritos",
-      ingredients: ["Tortillas", "Beans", "Rice", "Avocado", "Cilantro"],
-      cuisineType: "Mexican",
-      mealType: "lunch"
-    });
-  }
-  
-  // Chinese meals
-  if (cuisines.includes('chinese')) {
-    if (!isVegetarian) {
+    // Chinese meals
+    if (cuisines.includes('chinese')) {
+      if (!isVegetarian) {
+        meals.push({
+          name: "Chicken Fried Rice",
+          ingredients: ["Rice", "Chicken", "Eggs", "Green Onions", "Soy Sauce", "Garlic"],
+          cuisineType: "Chinese",
+          mealType: "dinner"
+        });
+      }
+      
       meals.push({
-        name: "Chicken Fried Rice",
-        ingredients: ["Rice", "Chicken", "Eggs", "Green Onions", "Soy Sauce", "Garlic"],
-        cuisineType: "Chinese",
-        mealType: "dinner"
-      });
-    }
-    
-    meals.push({
-      name: "Vegetable Stir Fry",
-      ingredients: ["Rice", "Bell Peppers", "Broccoli", "Carrots", "Ginger", "Garlic", "Soy Sauce"],
-      cuisineType: "Chinese",
-      mealType: "lunch"
-    });
-  }
-  
-  // Filter meals based on dietary preferences
-  let filteredMeals = [...meals];
-  
-  if (isVegetarian) {
-    filteredMeals = filteredMeals.filter(meal => 
-      !meal.ingredients.some(ingredient => 
-        ["Beef", "Chicken", "Pork", "Fish", "Shrimp", "Ground Beef"].includes(ingredient)
-      )
-    );
-  }
-  
-  if (isDairyFree) {
-    filteredMeals = filteredMeals.filter(meal => 
-      !meal.ingredients.some(ingredient => 
-        ["Milk", "Cheese", "Butter", "Cream", "Yogurt", "Parmesan Cheese"].includes(ingredient)
-      )
-    );
-  }
-  
-  if (isLowCarb) {
-    filteredMeals = filteredMeals.filter(meal => 
-      !meal.ingredients.some(ingredient => 
-        ["Pasta", "Rice", "Bread", "Tortillas"].includes(ingredient)
-      )
-    );
-  }
-  
-  // If we filtered too much, add some generic meals
-  if (filteredMeals.length < 3) {
-    if (isVegetarian && !isLowCarb) {
-      filteredMeals.push({
         name: "Vegetable Stir Fry",
-        ingredients: ["Bell Peppers", "Broccoli", "Carrots", "Ginger", "Garlic", "Soy Sauce"],
-        cuisineType: "Fusion",
-        mealType: "dinner"
+        ingredients: ["Rice", "Bell Peppers", "Broccoli", "Carrots", "Ginger", "Garlic", "Soy Sauce"],
+        cuisineType: "Chinese",
+        mealType: "lunch"
       });
     }
     
-    if (!isDairyFree && !isLowCarb) {
-      filteredMeals.push({
-        name: "Veggie Omelette",
-        ingredients: ["Eggs", "Bell Peppers", "Onions", "Cheese", "Spinach"],
-        cuisineType: "Breakfast",
-        mealType: "breakfast"
-      });
+    // Filter meals based on dietary preferences
+    let filteredMeals = [...meals];
+    
+    if (isVegetarian) {
+      filteredMeals = filteredMeals.filter(meal => 
+        !meal.ingredients.some(ingredient => 
+          ["Beef", "Chicken", "Pork", "Fish", "Shrimp", "Ground Beef"].includes(ingredient)
+        )
+      );
+    }
+    
+    if (isDairyFree) {
+      filteredMeals = filteredMeals.filter(meal => 
+        !meal.ingredients.some(ingredient => 
+          ["Milk", "Cheese", "Butter", "Cream", "Yogurt", "Parmesan Cheese"].includes(ingredient)
+        )
+      );
     }
     
     if (isLowCarb) {
-      filteredMeals.push({
-        name: "Cauliflower Rice Bowl",
-        ingredients: ["Cauliflower", "Bell Peppers", "Avocado", "Cilantro", "Lime"],
-        cuisineType: "Fusion",
-        mealType: "lunch"
-      });
+      filteredMeals = filteredMeals.filter(meal => 
+        !meal.ingredients.some(ingredient => 
+          ["Pasta", "Rice", "Bread", "Tortillas"].includes(ingredient)
+        )
+      );
+    }
+    
+    // If we filtered too much, add some generic meals
+    if (filteredMeals.length < 3) {
+      if (isVegetarian && !isLowCarb) {
+        filteredMeals.push({
+          name: "Vegetable Stir Fry",
+          ingredients: ["Bell Peppers", "Broccoli", "Carrots", "Ginger", "Garlic", "Soy Sauce"],
+          cuisineType: "Fusion",
+          mealType: "dinner"
+        });
+      }
+      
+      if (!isDairyFree && !isLowCarb) {
+        filteredMeals.push({
+          name: "Veggie Omelette",
+          ingredients: ["Eggs", "Bell Peppers", "Onions", "Cheese", "Spinach"],
+          cuisineType: "Breakfast",
+          mealType: "breakfast"
+        });
+      }
+      
+      if (isLowCarb) {
+        filteredMeals.push({
+          name: "Cauliflower Rice Bowl",
+          ingredients: ["Cauliflower", "Bell Peppers", "Avocado", "Cilantro", "Lime"],
+          cuisineType: "Fusion",
+          mealType: "lunch"
+        });
+      }
     }
   }
   

@@ -13,7 +13,6 @@ import MealPlanPage from "./pages/MealPlanPage";
 import ShoppingListPage from "./pages/ShoppingListPage";
 import ProfilePage from "./pages/ProfilePage";
 import LoadingPage from "./pages/LoadingPage";
-import FoodMoodPage from "./pages/FoodMoodPage";
 
 const queryClient = new QueryClient();
 
@@ -34,7 +33,6 @@ const App = () => (
             <Route path="/meal-plan" element={<MealPlanPage />} />
             <Route path="/shopping-list" element={<ShoppingListPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/food-mood" element={<FoodMoodPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
