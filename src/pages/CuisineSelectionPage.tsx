@@ -56,11 +56,11 @@ const CuisineSelectionPage = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-2xl font-bold text-recipe-terracota">
+            <h1 className="text-2xl font-bold text-cheffy-cream">
               Choose Cuisines
             </h1>
           </div>
-          <div className="text-sm font-medium px-3 py-1 bg-recipe-sunset/20 text-recipe-rojo rounded-full">
+          <div className="text-sm font-medium px-3 py-1 bg-cheffy-brown/20 text-cheffy-cream rounded-full">
             {selectedCuisines.length} selected
           </div>
         </div>
@@ -81,7 +81,7 @@ const CuisineSelectionPage = () => {
               onClick={() => toggleCuisine(cuisine.id)}
               className={`relative overflow-hidden rounded-xl shadow-md cursor-pointer transition-all ${
                 selectedCuisines.includes(cuisine.id)
-                  ? 'ring-2 ring-recipe-terracota ring-offset-1 scale-95'
+                  ? 'ring-2 ring-cheffy-brown ring-offset-1 scale-95'
                   : 'hover:scale-105'
               }`}
             >
@@ -96,8 +96,8 @@ const CuisineSelectionPage = () => {
                   {cuisine.name}
                 </div>
                 {selectedCuisines.includes(cuisine.id) && (
-                  <div className="absolute inset-0 bg-recipe-terracota/20 flex items-center justify-center">
-                    <div className="bg-recipe-terracota text-white rounded-full w-8 h-8 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-cheffy-brown/20 flex items-center justify-center">
+                    <div className="bg-cheffy-brown text-white rounded-full w-8 h-8 flex items-center justify-center">
                       <Check className="h-5 w-5" />
                     </div>
                   </div>
@@ -110,7 +110,7 @@ const CuisineSelectionPage = () => {
         <div className="mt-8 flex justify-center">
           <Button
             onClick={handlePlanMeals}
-            className="bg-recipe-terracota hover:bg-recipe-terracota/90 transition-opacity w-full"
+            className="bg-cheffy-brown hover:bg-cheffy-brown/90 transition-opacity w-full"
             disabled={selectedCuisines.length === 0}
           >
             Create Meal Plan

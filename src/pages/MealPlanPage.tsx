@@ -92,13 +92,13 @@ const MealPlanPage = () => {
 
   const getDayColor = (index: number) => {
     const colors = [
-      'bg-recipe-terracota',
-      'bg-recipe-rojo',
-      'bg-recipe-olive',
-      'bg-recipe-terracota',
-      'bg-recipe-rojo',
-      'bg-recipe-olive',
-      'bg-recipe-terracota'
+      'bg-cheffy-brown',
+      'bg-cheffy-brown',
+      'bg-cheffy-olive',
+      'bg-cheffy-brown',
+      'bg-cheffy-brown',
+      'bg-cheffy-olive',
+      'bg-cheffy-brown'
     ];
     return colors[index % colors.length];
   };
@@ -117,14 +117,14 @@ const MealPlanPage = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-2xl font-bold text-recipe-terracota">
+            <h1 className="text-2xl font-bold text-cheffy-cream">
               Weekly Meal Plan
             </h1>
           </div>
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center gap-2 border-recipe-terracota text-recipe-terracota"
+            className="flex items-center gap-2 border-cheffy-brown text-cheffy-cream"
             onClick={handleViewShoppingList}
           >
             <ShoppingCart className="h-4 w-4" />
@@ -136,7 +136,7 @@ const MealPlanPage = () => {
       <main className="container mx-auto p-4 max-w-md">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <div className="w-16 h-16 border-4 border-recipe-terracota border-t-transparent rounded-full animate-spin mb-4"></div>
+            <div className="w-16 h-16 border-4 border-cheffy-brown border-t-transparent rounded-full animate-spin mb-4"></div>
             <p className="text-muted-foreground">Creating your optimized meal plan...</p>
           </div>
         ) : (
@@ -185,7 +185,7 @@ const MealPlanPage = () => {
                           {dayPlan.recipe.dietaryInfo.slice(0, 2).map((info: string) => (
                             <span 
                               key={info} 
-                              className="px-2 py-0.5 bg-recipe-olive text-white text-xs rounded-full"
+                              className="px-2 py-0.5 bg-cheffy-olive text-white text-xs rounded-full"
                             >
                               {info}
                             </span>
@@ -206,7 +206,7 @@ const MealPlanPage = () => {
             <div className="mt-8 flex justify-center">
               <Button
                 onClick={handleViewShoppingList}
-                className="bg-recipe-terracota hover:bg-recipe-terracota/90 transition-opacity w-full flex items-center gap-2 justify-center"
+                className="bg-cheffy-brown hover:bg-cheffy-brown/90 transition-opacity w-full flex items-center gap-2 justify-center"
               >
                 <ShoppingCart className="h-5 w-5" />
                 View Shopping List

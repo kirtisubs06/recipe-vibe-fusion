@@ -76,7 +76,7 @@ const ReceiptUploadPage = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-2xl font-bold text-recipe-terracota">
+            <h1 className="text-2xl font-bold text-cheffy-cream">
               Upload Receipt
             </h1>
           </div>
@@ -112,18 +112,18 @@ const ReceiptUploadPage = () => {
               </div>
             ) : (
               <div 
-                className="border-2 border-dashed border-muted rounded-xl p-8 text-center flex flex-col items-center justify-center cursor-pointer hover:border-recipe-terracota transition-colors"
+                className="border-2 border-dashed border-muted rounded-xl p-8 text-center flex flex-col items-center justify-center cursor-pointer hover:border-cheffy-brown transition-colors"
                 onClick={handleCameraCapture}
                 style={{ minHeight: "200px" }}
               >
                 <div className="p-4 rounded-full bg-muted mb-4">
-                  <Camera className="h-10 w-10 text-recipe-terracota" />
+                  <Camera className="h-10 w-10 text-cheffy-brown" />
                 </div>
                 <p className="font-medium text-sm mb-2">Take a photo of your receipt</p>
                 <p className="text-xs text-muted-foreground mb-2">or</p>
                 <label 
                   htmlFor="receipt-file-input"
-                  className="text-recipe-terracota underline cursor-pointer text-sm"
+                  className="text-cheffy-brown underline cursor-pointer text-sm"
                 >
                   Browse files
                 </label>
@@ -148,7 +148,7 @@ const ReceiptUploadPage = () => {
 
           <Button 
             onClick={handleProcessReceipt} 
-            className="bg-recipe-terracota hover:bg-recipe-terracota/90 transition-opacity w-full"
+            className="bg-cheffy-brown hover:bg-cheffy-brown/90 transition-opacity w-full"
             disabled={!uploadedImage || isProcessing}
           >
             {isProcessing ? "Processing..." : "Process Receipt"}

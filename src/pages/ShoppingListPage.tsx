@@ -71,10 +71,10 @@ const ShoppingListPage = () => {
 
   const getCategoryColor = (category: string) => {
     switch(category) {
-      case 'Produce': return 'bg-recipe-olive text-white';
-      case 'Meat & Seafood': return 'bg-recipe-rojo text-white';
-      case 'Dairy': return 'bg-recipe-sunset text-recipe-rojo';
-      default: return 'bg-recipe-terracota text-white';
+      case 'Produce': return 'bg-cheffy-olive text-white';
+      case 'Meat & Seafood': return 'bg-cheffy-brown text-white';
+      case 'Dairy': return 'bg-cheffy-cream text-cheffy-brown';
+      default: return 'bg-cheffy-brown text-white';
     }
   };
 
@@ -92,11 +92,11 @@ const ShoppingListPage = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-2xl font-bold text-recipe-terracota">
+            <h1 className="text-2xl font-bold text-cheffy-cream">
               Shopping List
             </h1>
           </div>
-          <div className="text-sm font-medium px-3 py-1 bg-recipe-sunset/20 text-recipe-rojo rounded-full">
+          <div className="text-sm font-medium px-3 py-1 bg-cheffy-brown/20 text-cheffy-cream rounded-full">
             {checkedCount}/{rawShoppingList.length}
           </div>
         </div>
@@ -128,7 +128,7 @@ const ShoppingListPage = () => {
                           <button 
                             className={`w-6 h-6 rounded-full ${
                               checkedItems[item] 
-                                ? 'bg-recipe-terracota border-recipe-terracota text-white' 
+                                ? 'bg-cheffy-brown border-cheffy-brown text-white' 
                                 : 'border border-gray-300'
                             } flex items-center justify-center`}
                             onClick={() => toggleItemCheck(item)}
@@ -154,7 +154,7 @@ const ShoppingListPage = () => {
         <div className="mt-8 flex justify-center">
           <Button
             onClick={handleShare}
-            className="bg-recipe-terracota hover:bg-recipe-terracota/90 transition-opacity w-full flex items-center gap-2 justify-center"
+            className="bg-cheffy-brown hover:bg-cheffy-brown/90 transition-opacity w-full flex items-center gap-2 justify-center"
           >
             <Download className="h-5 w-5" />
             Export Shopping List

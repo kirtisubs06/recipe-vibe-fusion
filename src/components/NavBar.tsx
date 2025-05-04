@@ -11,7 +11,7 @@ const NavBar: React.FC = () => {
   };
   
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-sidebar shadow-lg backdrop-blur-lg bg-opacity-95 border-t border-border z-10">
+    <div className="fixed bottom-0 left-0 right-0 bg-cheffy-olive shadow-lg backdrop-blur-lg bg-opacity-95 border-t border-cheffy-brown/20 z-10">
       <div className="flex justify-around items-center py-2 px-2 max-w-md mx-auto">
         <Link to="/" className={`nav-link ${isActive('/') ? 'active' : 'inactive'}`}>
           <Home className="h-6 w-6" />
