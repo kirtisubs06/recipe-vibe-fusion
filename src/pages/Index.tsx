@@ -1,13 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import RecipeCard from '@/components/RecipeCard';
 import { mockRecipes } from '@/data/mockRecipes';
 import NavBar from '@/components/NavBar';
 import { useNavigate } from 'react-router-dom';
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
-import { Check, X } from "lucide-react";
 
 const Index = () => {
   const [selectedCuisine, setSelectedCuisine] = useState<string | null>(null);
@@ -55,18 +53,109 @@ const Index = () => {
   };
   
   const [currentCuisineIndex, setCurrentCuisineIndex] = useState(0);
+  const [swipeDirection, setSwipeDirection] = useState<string | null>(null);
+  const [touchStartX, setTouchStartX] = useState(0);
+  const [touchEndX, setTouchEndX] = useState(0);
+  const [dragDistance, setDragDistance] = useState(0);
+  const cardRef = useRef<HTMLDivElement>(null);
   
-  const handleSwipeRight = () => {
-    handleCuisineSelect(cuisines[currentCuisineIndex].id);
-    if (currentCuisineIndex < cuisines.length - 1) {
-      setCurrentCuisineIndex(currentCuisineIndex + 1);
+  const minSwipeDistance = 100;
+  
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+    setSwipeDirection(null);
+    setDragDistance(0);
+  };
+  
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartX === 0) return;
+    
+    const currentX = e.touches[0].clientX;
+    const distance = currentX - touchStartX;
+    setDragDistance(distance);
+    
+    if (cardRef.current) {
+      cardRef.current.style.transform = `translateX(${distance}px) rotate(${distance * 0.05}deg)`;
+      
+      if (distance > 0) {
+        cardRef.current.style.boxShadow = '0 10px 20px rgba(0, 200, 0, 0.2)';
+      } else if (distance < 0) {
+        cardRef.current.style.boxShadow = '0 10px 20px rgba(255, 0, 0, 0.2)';
+      } else {
+        cardRef.current.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
+      }
     }
   };
   
-  const handleSwipeLeft = () => {
-    if (currentCuisineIndex < cuisines.length - 1) {
-      setCurrentCuisineIndex(currentCuisineIndex + 1);
+  const handleTouchEnd = () => {
+    if (Math.abs(dragDistance) >= minSwipeDistance) {
+      if (dragDistance > 0) {
+        // Swiped right - like this cuisine
+        setSwipeDirection('right');
+        handleSwipeRight();
+      } else {
+        // Swiped left - skip this cuisine
+        setSwipeDirection('left');
+        handleSwipeLeft();
+      }
+    } else {
+      // Reset if not swiped far enough
+      if (cardRef.current) {
+        cardRef.current.style.transform = 'translateX(0) rotate(0deg)';
+        cardRef.current.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
+      }
     }
+    
+    setTouchStartX(0);
+    setTouchEndX(0);
+    setDragDistance(0);
+  };
+  
+  const handleSwipeRight = () => {
+    if (cardRef.current) {
+      cardRef.current.style.transform = 'translateX(150%) rotate(30deg)';
+      cardRef.current.style.opacity = '0';
+    }
+    
+    handleCuisineSelect(cuisines[currentCuisineIndex].id);
+    
+    setTimeout(() => {
+      if (currentCuisineIndex < cuisines.length - 1) {
+        setCurrentCuisineIndex(currentCuisineIndex + 1);
+      }
+      resetCardStyle();
+    }, 300);
+  };
+  
+  const handleSwipeLeft = () => {
+    if (cardRef.current) {
+      cardRef.current.style.transform = 'translateX(-150%) rotate(-30deg)';
+      cardRef.current.style.opacity = '0';
+    }
+    
+    setTimeout(() => {
+      if (currentCuisineIndex < cuisines.length - 1) {
+        setCurrentCuisineIndex(currentCuisineIndex + 1);
+      }
+      resetCardStyle();
+    }, 300);
+  };
+  
+  const resetCardStyle = () => {
+    setTimeout(() => {
+      if (cardRef.current) {
+        cardRef.current.style.transition = 'none';
+        cardRef.current.style.transform = 'translateX(0) rotate(0deg)';
+        cardRef.current.style.opacity = '1';
+        cardRef.current.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
+        
+        // Force reflow
+        void cardRef.current.offsetWidth;
+        
+        // Re-enable the transition
+        cardRef.current.style.transition = 'transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease';
+      }
+    }, 300);
   };
   
   return (
@@ -93,36 +182,28 @@ const Index = () => {
         </h2>
         <div className="relative h-[400px]">
           {currentCuisineIndex < cuisines.length && (
-            <div className="absolute inset-0">
+            <div 
+              ref={cardRef}
+              className="absolute inset-0 transition-transform"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
               <div className="w-full h-full relative bg-card rounded-2xl overflow-hidden shadow-xl">
                 <img 
                   src={cuisines[currentCuisineIndex].image} 
                   alt={cuisines[currentCuisineIndex].name} 
                   className="w-full h-full object-cover"
+                  draggable="false"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
                   <div className="w-full p-6">
                     <h3 className="text-3xl font-bold text-white mb-4">
                       {cuisines[currentCuisineIndex].name}
                     </h3>
-                    
-                    <div className="flex justify-between mt-4">
-                      <Button 
-                        variant="destructive" 
-                        size="lg" 
-                        className="rounded-full w-16 h-16" 
-                        onClick={handleSwipeLeft}
-                      >
-                        <X className="h-8 w-8" />
-                      </Button>
-                      <Button 
-                        size="lg" 
-                        className="rounded-full w-16 h-16 bg-green-500 hover:bg-green-600" 
-                        onClick={handleSwipeRight}
-                      >
-                        <Check className="h-8 w-8" />
-                      </Button>
-                    </div>
+                    <p className="text-white/90 text-sm">
+                      Swipe right to select, swipe left to skip
+                    </p>
                   </div>
                 </div>
               </div>
