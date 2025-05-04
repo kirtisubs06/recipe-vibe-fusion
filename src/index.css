@@ -5,89 +5,90 @@
 
 @layer base {
   :root {
-    --background: 240 10% 12%;
-    --foreground: 0 0% 95%;
+    --background: 0 0% 9%;
+    --foreground: 36 33% 97%;
 
-    --card: 240 10% 16%;
-    --card-foreground: 0 0% 95%;
+    --card: 0 0% 13%;
+    --card-foreground: 36 33% 97%;
 
-    --popover: 240 10% 16%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 13%;
+    --popover-foreground: 36 33% 97%;
 
-    --primary: 240 5% 65%;
-    --primary-foreground: 0 0% 95%;
+    --primary: 36 33% 97%;
+    --primary-foreground: 0 0% 9%;
 
-    --secondary: 83 43% 37%;
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 36 100% 50%;
+    --secondary-foreground: 36 33% 97%;
 
-    --muted: 240 10% 20%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 36 10% 80%;
 
-    --accent: 44 51% 55%;
-    --accent-foreground: 240 10% 12%;
+    --accent: 36 100% 50%;
+    --accent-foreground: 0 0% 9%;
 
-    --destructive: 10 78% 40%;
-    --destructive-foreground: 0 0% 95%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 36 33% 97%;
 
-    --border: 240 10% 20%;
-    --input: 240 10% 20%;
-    --ring: 240 5% 65%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 36 33% 97%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    --sidebar-background: 240 10% 10%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 240 5% 65%;
-    --sidebar-primary-foreground: 240 10% 12%;
-    --sidebar-accent: 240 10% 16%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 240 10% 20%;
-    --sidebar-ring: 240 5% 65%;
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 36 33% 97%;
+    --sidebar-primary: 36 33% 97%;
+    --sidebar-primary-foreground: 0 0% 9%;
+    --sidebar-accent: 0 0% 13%;
+    --sidebar-accent-foreground: 36 33% 97%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 36 33% 97%;
 
-    --recipe-primary: #9b87f5;
-    --recipe-terracota: #9b87f5;
-    --recipe-rojo: #7E69AB;
-    --recipe-olive: #6E59A5;
-    --recipe-sunset: #D6BCFA;
+    /* Color Palette from the image */
+    --recipe-primary: #D08224;    /* Terracota */
+    --recipe-terracota: #D08224;  /* HEX: #D08224 */
+    --recipe-rojo: #AE431E;       /* Chile Rojo HEX: #AE431E */
+    --recipe-olive: #8A8635;      /* Olive HEX: #8A8635 */
+    --recipe-sunset: #EAC891;     /* Sunset HEX: #EAC891 */
   }
 
   .dark {
-    --background: 240 10% 8%;
-    --foreground: 0 0% 95%;
+    --background: 0 0% 9%;
+    --foreground: 36 33% 97%;
 
-    --card: 240 10% 12%;
-    --card-foreground: 0 0% 95%;
+    --card: 0 0% 13%;
+    --card-foreground: 36 33% 97%;
 
-    --popover: 240 10% 12%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 13%;
+    --popover-foreground: 36 33% 97%;
 
-    --primary: 240 5% 65%;
-    --primary-foreground: 240 10% 12%;
+    --primary: 36 33% 97%;
+    --primary-foreground: 0 0% 9%;
 
-    --secondary: 83 43% 37%;
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 36 100% 50%;
+    --secondary-foreground: 36 33% 97%;
 
-    --muted: 240 10% 16%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 36 10% 80%;
 
-    --accent: 44 51% 55%;
-    --accent-foreground: 240 10% 12%;
+    --accent: 36 100% 50%;
+    --accent-foreground: 0 0% 9%;
 
-    --destructive: 10 78% 30%;
-    --destructive-foreground: 0 0% 95%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 36 33% 97%;
 
-    --border: 240 10% 16%;
-    --input: 240 10% 16%;
-    --ring: 240 5% 65%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 36 33% 97%;
     
-    --sidebar-background: 240 10% 6%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 240 5% 65%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 10% 12%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 240 10% 16%;
-    --sidebar-ring: 240 5% 65%;
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 36 33% 97%;
+    --sidebar-primary: 36 33% 97%;
+    --sidebar-primary-foreground: 36 33% 97%;
+    --sidebar-accent: 0 0% 13%;
+    --sidebar-accent-foreground: 36 33% 97%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 36 33% 97%;
   }
 }
 
@@ -100,11 +101,19 @@
     @apply bg-background text-foreground;
     font-family: 'Poppins', sans-serif;
   }
+  
+  h1, h2 {
+    font-family: 'Prata', serif;
+  }
+  
+  .script-font {
+    font-family: 'Great Vibes', cursive;
+  }
 }
 
 @layer components {
   .recipe-card {
-    @apply relative overflow-hidden rounded-2xl shadow-lg transition-all duration-300 bg-white;
+    @apply relative overflow-hidden rounded-2xl shadow-lg transition-all duration-300 bg-card;
     transform-style: preserve-3d;
     perspective: 1000px;
   }
@@ -134,7 +143,7 @@
   }
   
   .glass-card {
-    @apply backdrop-blur-sm bg-white/70 dark:bg-black/30 border border-white/20 dark:border-white/10 rounded-2xl;
+    @apply backdrop-blur-sm bg-black/30 border border-white/10 rounded-2xl;
   }
   
   .nav-link {
@@ -142,7 +151,7 @@
   }
   
   .nav-link.active {
-    @apply text-primary;
+    @apply text-recipe-terracota;
   }
   
   .nav-link.inactive {
@@ -150,5 +159,4 @@
   }
 }
 
-/* Import Google Fonts - Poppins */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+/* Import Google Fonts - Poppins is already imported in the HTML */

@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -18,6 +19,11 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'script': ['"Great Vibes"', 'cursive'],
+				'display': ['Prata', 'serif'],
+				'sans': ['Poppins', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -63,11 +69,11 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				recipe: {
-					primary: '#9b87f5',
-					terracota: '#9b87f5', // Primary Purple
-					rojo: '#7E69AB',     // Secondary Purple
-					olive: '#6E59A5',     // Tertiary Purple
-					sunset: '#D6BCFA'     // Light Purple
+					primary: '#D08224',      /* Terracota */
+					terracota: '#D08224',    /* HEX: #D08224 */
+					rojo: '#AE431E',         /* Chile Rojo HEX: #AE431E */
+					olive: '#8A8635',        /* Olive HEX: #8A8635 */
+					sunset: '#EAC891'        /* Sunset HEX: #EAC891 */
 				}
 			},
 			borderRadius: {
