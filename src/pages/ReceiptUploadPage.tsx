@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Upload, ArrowLeft, Camera, X, FileText, Clipboard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -150,7 +149,6 @@ const ReceiptUploadPage = () => {
       .catch(() => {
         toast("Failed to copy", {
           description: "Could not access clipboard",
-          variant: "destructive",
         });
       });
   };
