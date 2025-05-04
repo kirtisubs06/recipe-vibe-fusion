@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, ShoppingCart, Calendar, Clock, Users } from 'lucide-react';
@@ -124,9 +125,16 @@ const MealPlanPage = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-2xl font-bold text-cheffy-cream">
-              Weekly Meal Plan
-            </h1>
+            <div className="flex items-center">
+              <img 
+                src="/lovable-uploads/86286b24-5a62-4fe2-9370-178d77d49428.png" 
+                alt="Cheffy Logo" 
+                className="h-8 w-8 mr-2"
+              />
+              <h1 className="text-2xl font-bold text-cheffy-cream">
+                Weekly Meal Plan
+              </h1>
+            </div>
           </div>
           <Button
             variant="outline"

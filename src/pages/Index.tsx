@@ -50,7 +50,7 @@ const Index = () => {
       <div className="pt-6 pb-4 px-4 text-center">
         <div className="flex items-center justify-center gap-2">
           <img 
-            src="/lovable-uploads/2a413b17-7ada-438c-84e4-f7f08b2e654a.png" 
+            src="/lovable-uploads/86286b24-5a62-4fe2-9370-178d77d49428.png" 
             alt="Cheffy Logo" 
             className="h-12 w-12"
           />
