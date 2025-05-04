@@ -11,6 +11,7 @@ export type Recipe = {
   vibes: string[];
   dietaryInfo: string[];
   dietaryTags?: string[]; // Added for backward compatibility if needed
+  cuisine: string; // Added cuisine property
 };
 
 export const mockRecipes: Recipe[] = [
@@ -45,7 +46,8 @@ export const mockRecipes: Recipe[] = [
       "Garnish with parsley and serve immediately."
     ],
     vibes: ["Gourmet", "Date Night"],
-    dietaryInfo: ["High Protein"]
+    dietaryInfo: ["High Protein"],
+    cuisine: "italian"
   },
   {
     id: "2",
@@ -78,7 +80,8 @@ export const mockRecipes: Recipe[] = [
       "Garnish with green onions and sesame seeds before serving."
     ],
     vibes: ["Quick & Easy", "Healthy"],
-    dietaryInfo: ["Vegetarian", "Low Calorie"]
+    dietaryInfo: ["Vegetarian", "Low Calorie"],
+    cuisine: "chinese"
   },
   {
     id: "3",
@@ -111,7 +114,8 @@ export const mockRecipes: Recipe[] = [
       "Remove bay leaves, garnish with fresh parsley, and serve warm."
     ],
     vibes: ["Comfort Food", "Family Meal"],
-    dietaryInfo: ["High Protein"]
+    dietaryInfo: ["High Protein"],
+    cuisine: "american"
   },
   {
     id: "4",
@@ -144,6 +148,7 @@ export const mockRecipes: Recipe[] = [
       "Drizzle dressing over the bowl and serve immediately."
     ],
     vibes: ["Healthy", "Budget-Friendly"],
-    dietaryInfo: ["Vegan", "Gluten-Free"]
+    dietaryInfo: ["Vegan", "Gluten-Free"],
+    cuisine: "mediterranean"
   }
 ];
