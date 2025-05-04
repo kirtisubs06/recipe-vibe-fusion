@@ -14,10 +14,10 @@ const VibeSelection: React.FC<VibeSelectionProps> = ({ onVibeSelect }) => {
     { name: 'Comfort Food', emoji: '🍲', color: 'bg-recipe-sunset' },
     { name: 'Healthy', emoji: '🥗', color: 'bg-recipe-olive' },
     { name: 'Gourmet', emoji: '👨‍🍳', color: 'bg-recipe-rojo' },
-    { name: 'Budget-Friendly', emoji: '💰', color: 'bg-blue-500' },
-    { name: 'Family Meal', emoji: '👪', color: 'bg-orange-400' },
-    { name: 'Spicy', emoji: '🌶️', color: 'bg-red-600' },
-    { name: 'Sweet Tooth', emoji: '🍰', color: 'bg-pink-400' },
+    { name: 'Budget-Friendly', emoji: '💰', color: 'bg-recipe-terracota' },
+    { name: 'Family Meal', emoji: '👪', color: 'bg-recipe-olive' },
+    { name: 'Spicy', emoji: '🌶️', color: 'bg-recipe-rojo' },
+    { name: 'Sweet Tooth', emoji: '🍰', color: 'bg-recipe-sunset' },
   ];
 
   const toggleVibe = (vibe: string) => {
@@ -30,7 +30,7 @@ const VibeSelection: React.FC<VibeSelectionProps> = ({ onVibeSelect }) => {
 
   return (
     <div className="p-2 mt-4">
-      <h2 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-recipe-terracota to-recipe-rojo bg-clip-text text-transparent">
+      <h2 className="text-2xl font-bold mb-6 text-center text-recipe-terracota">
         What's your vibe today?
       </h2>
       <div className="grid grid-cols-2 gap-4 mb-8">
@@ -40,7 +40,7 @@ const VibeSelection: React.FC<VibeSelectionProps> = ({ onVibeSelect }) => {
             onClick={() => toggleVibe(vibe.name)}
             className={`relative overflow-hidden rounded-xl shadow-md transition-all duration-300 ${
               selectedVibes.includes(vibe.name) 
-                ? `${vibe.color} text-white ring-2 ring-offset-2 ring-${vibe.color} scale-95` 
+                ? `${vibe.color} text-white ring-2 ring-offset-2 ring-${vibe.color.replace('bg-', '')} scale-95` 
                 : 'bg-card hover:scale-105'
             } p-4 flex flex-col items-center gap-2`}
           >
@@ -51,7 +51,7 @@ const VibeSelection: React.FC<VibeSelectionProps> = ({ onVibeSelect }) => {
       </div>
       <Button
         onClick={() => onVibeSelect(selectedVibes)}
-        className="w-full bg-gradient-to-r from-recipe-terracota to-recipe-rojo hover:opacity-90 transition-opacity"
+        className="w-full bg-recipe-terracota hover:bg-recipe-terracota/90 transition-opacity"
         size="lg"
         disabled={selectedVibes.length === 0}
       >

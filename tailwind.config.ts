@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -64,14 +63,11 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				recipe: {
-					primary: '#FF5A5F',
-					mint: '#00B27D',
-					yellow: '#FFD166',
-					purple: '#6B5DDF',
-					terracota: '#D08224',
-					rojo: '#AE431E',
-					olive: '#8A8635',
-					sunset: '#EAC891'
+					primary: '#D08224',
+					terracota: '#D08224', // From the image
+					rojo: '#AE431E',     // From the image
+					olive: '#8A8635',     // From the image
+					sunset: '#EAC891'     // From the image
 				}
 			},
 			borderRadius: {

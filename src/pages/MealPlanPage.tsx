@@ -95,10 +95,10 @@ const MealPlanPage = () => {
       'bg-recipe-terracota',
       'bg-recipe-rojo',
       'bg-recipe-olive',
-      'bg-blue-500',
-      'bg-purple-500',
       'bg-recipe-terracota',
-      'bg-recipe-sunset'
+      'bg-recipe-rojo',
+      'bg-recipe-olive',
+      'bg-recipe-terracota'
     ];
     return colors[index % colors.length];
   };
@@ -106,7 +106,7 @@ const MealPlanPage = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <header className="bg-card bg-opacity-50 backdrop-blur-sm shadow-sm p-4">
+      <header className="bg-card shadow-sm p-4">
         <div className="flex justify-between items-center max-w-md mx-auto">
           <div className="flex items-center">
             <Button 
@@ -117,7 +117,7 @@ const MealPlanPage = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-recipe-terracota to-recipe-rojo bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold text-recipe-terracota">
               Weekly Meal Plan
             </h1>
           </div>
@@ -185,7 +185,7 @@ const MealPlanPage = () => {
                           {dayPlan.recipe.dietaryInfo.slice(0, 2).map((info: string) => (
                             <span 
                               key={info} 
-                              className="px-2 py-0.5 bg-recipe-olive/10 text-recipe-olive text-xs rounded-full"
+                              className="px-2 py-0.5 bg-recipe-olive text-white text-xs rounded-full"
                             >
                               {info}
                             </span>
@@ -206,7 +206,7 @@ const MealPlanPage = () => {
             <div className="mt-8 flex justify-center">
               <Button
                 onClick={handleViewShoppingList}
-                className="bg-gradient-to-r from-recipe-terracota to-recipe-rojo hover:opacity-90 transition-opacity w-full flex items-center gap-2 justify-center"
+                className="bg-recipe-terracota hover:bg-recipe-terracota/90 transition-opacity w-full flex items-center gap-2 justify-center"
               >
                 <ShoppingCart className="h-5 w-5" />
                 View Shopping List

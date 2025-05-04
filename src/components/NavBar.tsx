@@ -11,7 +11,7 @@ const NavBar: React.FC = () => {
   };
   
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-900 shadow-lg backdrop-blur-lg bg-opacity-80 dark:bg-opacity-80 border-t border-gray-200 dark:border-gray-800 z-10">
+    <div className="fixed bottom-0 left-0 right-0 bg-card shadow-lg backdrop-blur-lg bg-opacity-95 dark:bg-opacity-95 border-t border-border z-10">
       <div className="flex justify-around items-center py-2 px-2 max-w-md mx-auto">
         <Link to="/" className={`nav-link ${isActive('/') ? 'active' : 'inactive'}`}>
           <Home className="h-6 w-6" />
@@ -26,7 +26,7 @@ const NavBar: React.FC = () => {
         <div className="relative -mt-8">
           <Link 
             to="/receipt-upload" 
-            className="flex items-center justify-center rounded-full w-16 h-16 bg-gradient-to-tr from-recipe-terracota to-recipe-rojo text-white shadow-lg"
+            className="flex items-center justify-center rounded-full w-16 h-16 bg-recipe-terracota text-white shadow-lg"
           >
             <Receipt className="h-7 w-7" />
           </Link>

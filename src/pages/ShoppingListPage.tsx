@@ -74,14 +74,14 @@ const ShoppingListPage = () => {
       case 'Produce': return 'bg-recipe-olive text-white';
       case 'Meat & Seafood': return 'bg-recipe-rojo text-white';
       case 'Dairy': return 'bg-recipe-sunset text-recipe-rojo';
-      default: return 'bg-gray-100 text-gray-800';
+      default: return 'bg-recipe-terracota text-white';
     }
   };
 
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <header className="bg-card bg-opacity-50 backdrop-blur-sm shadow-sm p-4 sticky top-0 z-10">
+      <header className="bg-card shadow-sm p-4 sticky top-0 z-10">
         <div className="flex justify-between items-center max-w-md mx-auto">
           <div className="flex items-center">
             <Button 
@@ -92,7 +92,7 @@ const ShoppingListPage = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-recipe-terracota to-recipe-rojo bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold text-recipe-terracota">
               Shopping List
             </h1>
           </div>
@@ -154,7 +154,7 @@ const ShoppingListPage = () => {
         <div className="mt-8 flex justify-center">
           <Button
             onClick={handleShare}
-            className="bg-gradient-to-r from-recipe-terracota to-recipe-rojo hover:opacity-90 transition-opacity w-full flex items-center gap-2 justify-center"
+            className="bg-recipe-terracota hover:bg-recipe-terracota/90 transition-opacity w-full flex items-center gap-2 justify-center"
           >
             <Download className="h-5 w-5" />
             Export Shopping List

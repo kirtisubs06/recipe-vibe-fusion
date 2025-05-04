@@ -65,7 +65,7 @@ const ReceiptUploadPage = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <header className="bg-card bg-opacity-50 backdrop-blur-sm shadow-sm p-4">
+      <header className="bg-card shadow-sm p-4">
         <div className="flex justify-between items-center max-w-md mx-auto">
           <div className="flex items-center">
             <Button 
@@ -76,7 +76,7 @@ const ReceiptUploadPage = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-recipe-terracota to-recipe-rojo bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold text-recipe-terracota">
               Upload Receipt
             </h1>
           </div>
@@ -141,14 +141,14 @@ const ReceiptUploadPage = () => {
             {isProcessing && (
               <div className="p-4 bg-muted/50">
                 <p className="text-sm font-medium mb-2">Processing receipt...</p>
-                <Progress value={progress} className="h-2" />
+                <Progress value={progress} className="h-2 bg-muted" />
               </div>
             )}
           </div>
 
           <Button 
             onClick={handleProcessReceipt} 
-            className="bg-gradient-to-r from-recipe-terracota to-recipe-rojo hover:opacity-90 transition-opacity w-full"
+            className="bg-recipe-terracota hover:bg-recipe-terracota/90 transition-opacity w-full"
             disabled={!uploadedImage || isProcessing}
           >
             {isProcessing ? "Processing..." : "Process Receipt"}

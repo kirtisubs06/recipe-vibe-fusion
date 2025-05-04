@@ -13,7 +13,7 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <header className="bg-card bg-opacity-50 backdrop-blur-sm shadow-sm p-4">
+      <header className="bg-card shadow-sm p-4">
         <div className="flex justify-between items-center max-w-md mx-auto">
           <div className="flex items-center">
             <Button 
@@ -39,7 +39,7 @@ const ProfilePage = () => {
           </div>
           <h2 className="text-xl font-bold">Jamie Smith</h2>
           <p className="text-sm text-muted-foreground">jamie@example.com</p>
-          <Button variant="outline" size="sm" className="mt-2 flex gap-2">
+          <Button variant="outline" size="sm" className="mt-2 flex gap-2 border-recipe-terracota text-recipe-terracota hover:bg-recipe-terracota/10">
             <Edit className="h-4 w-4" /> Edit Profile
           </Button>
         </div>
@@ -54,7 +54,7 @@ const ProfilePage = () => {
               </div>
               <Switch />
             </div>
-            <Separator />
+            <Separator className="bg-muted" />
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Moon className="h-4 w-4 text-recipe-olive" />
@@ -82,16 +82,16 @@ const ProfilePage = () => {
         <div className="bg-card rounded-xl shadow-sm p-4 mb-6">
           <h3 className="font-medium mb-3">Dietary Preferences</h3>
           <div className="flex flex-wrap gap-2">
-            <span className="bg-recipe-olive/20 text-recipe-olive px-3 py-1 rounded-full text-sm">Vegetarian</span>
-            <span className="bg-recipe-olive/20 text-recipe-olive px-3 py-1 rounded-full text-sm">Low Carb</span>
-            <span className="bg-recipe-olive/20 text-recipe-olive px-3 py-1 rounded-full text-sm">Dairy Free</span>
-            <Button variant="outline" size="sm" className="rounded-full text-xs px-3 py-1 h-auto border-dashed">
+            <span className="bg-recipe-olive text-white px-3 py-1 rounded-full text-sm">Vegetarian</span>
+            <span className="bg-recipe-olive text-white px-3 py-1 rounded-full text-sm">Low Carb</span>
+            <span className="bg-recipe-olive text-white px-3 py-1 rounded-full text-sm">Dairy Free</span>
+            <Button variant="outline" size="sm" className="rounded-full text-xs px-3 py-1 h-auto border-dashed border-recipe-terracota text-recipe-terracota">
               + Add
             </Button>
           </div>
         </div>
         
-        <Button variant="outline" className="w-full flex gap-2 text-destructive hover:text-destructive">
+        <Button variant="outline" className="w-full flex gap-2 text-destructive hover:text-destructive border-destructive">
           <LogOut className="h-4 w-4" /> Log Out
         </Button>
       </main>

@@ -75,10 +75,10 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <header className="bg-card bg-opacity-50 backdrop-blur-sm shadow-sm p-4">
+      <header className="bg-card shadow-sm p-4">
         <div className="flex flex-col max-w-md mx-auto gap-3">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-recipe-terracota to-recipe-rojo bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold text-recipe-terracota">
               Recipe Vibe
             </h1>
             {currentView === 'recipes' && 
@@ -92,7 +92,7 @@ const Index = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input 
               placeholder="Search recipes..." 
-              className="pl-10 bg-white dark:bg-zinc-800 shadow-sm"
+              className="pl-10 bg-card shadow-sm"
               value={searchQuery}
               onChange={handleSearch}
             />

@@ -45,7 +45,7 @@ const CuisineSelectionPage = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <header className="bg-card bg-opacity-50 backdrop-blur-sm shadow-sm p-4">
+      <header className="bg-card shadow-sm p-4">
         <div className="flex justify-between items-center max-w-md mx-auto">
           <div className="flex items-center">
             <Button 
@@ -56,7 +56,7 @@ const CuisineSelectionPage = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-recipe-terracota to-recipe-rojo bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold text-recipe-terracota">
               Choose Cuisines
             </h1>
           </div>
@@ -110,7 +110,7 @@ const CuisineSelectionPage = () => {
         <div className="mt-8 flex justify-center">
           <Button
             onClick={handlePlanMeals}
-            className="bg-gradient-to-r from-recipe-terracota to-recipe-rojo hover:opacity-90 transition-opacity w-full"
+            className="bg-recipe-terracota hover:bg-recipe-terracota/90 transition-opacity w-full"
             disabled={selectedCuisines.length === 0}
           >
             Create Meal Plan
