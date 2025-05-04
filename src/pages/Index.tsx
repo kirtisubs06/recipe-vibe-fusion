@@ -46,10 +46,19 @@ const Index = () => {
   
   return (
     <div className="flex flex-col min-h-screen pb-16">
-      {/* Header */}
+      {/* Header with Logo */}
       <div className="pt-6 pb-4 px-4 text-center">
-        <h1 className="text-4xl font-script text-cheffy-cream">Cheffy</h1>
-        <p className="text-cheffy-cream/90 text-sm">Shop. Plan. Save. Eat!</p>
+        <div className="flex items-center justify-center gap-2">
+          <img 
+            src="/lovable-uploads/2a413b17-7ada-438c-84e4-f7f08b2e654a.png" 
+            alt="Cheffy Logo" 
+            className="h-12 w-12"
+          />
+          <div>
+            <h1 className="text-4xl font-script text-cheffy-cream">Cheffy</h1>
+            <p className="text-cheffy-cream/90 text-sm">Shop. Plan. Save. Eat!</p>
+          </div>
+        </div>
       </div>
       
       {/* Vibe and Diet Selections */}

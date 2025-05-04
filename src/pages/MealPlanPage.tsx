@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, ShoppingCart, Calendar, Clock, Users } from 'lucide-react';
@@ -59,13 +58,14 @@ const MealPlanPage = () => {
   const [mealPlan, setMealPlan] = useState<any[]>([]);
   const [shoppingList, setShoppingList] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [toastShown, setToastShown] = useState(false);
   
   // Get selected cuisines from location state
   const selectedCuisines = location.state?.selectedCuisines || [];
   
   useEffect(() => {
     // Simulate API call delay
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       // Generate meal plan based on selected cuisines
       const generatedMealPlan = generateMealPlan(selectedCuisines);
       setMealPlan(generatedMealPlan);
@@ -76,11 +76,18 @@ const MealPlanPage = () => {
       
       setIsLoading(false);
       
-      toast("Your meal plan is ready!", {
-        description: "We've optimized recipes based on your preferences",
-      });
+      // Show toast notification only once
+      if (!toastShown) {
+        toast("Your meal plan is ready!", {
+          description: "We've optimized recipes based on your preferences",
+        });
+        setToastShown(true);
+      }
     }, 2000);
-  }, [selectedCuisines]);
+    
+    // Clean up timeout to prevent memory leaks
+    return () => clearTimeout(timer);
+  }, [selectedCuisines, toastShown]);
 
   const handleViewRecipe = (recipeId: string) => {
     navigate(`/recipe/${recipeId}`);
