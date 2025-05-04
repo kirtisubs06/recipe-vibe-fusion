@@ -5,10 +5,12 @@ import RecipeCard from '@/components/RecipeCard';
 import VibeSelection from '@/components/VibeSelection';
 import { mockRecipes } from '@/data/mockRecipes';
 import NavBar from '@/components/NavBar';
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
   const [selectedVibe, setSelectedVibe] = useState<string | null>(null);
   const [selectedDiet, setSelectedDiet] = useState<string | null>(null);
+  const navigate = useNavigate();
   
   // Mock query that would normally fetch from an API
   const { data: recipes = [] } = useQuery({
@@ -17,11 +19,30 @@ const Index = () => {
       // Simulate API filtering
       return mockRecipes.filter(recipe => {
         const matchesVibe = !selectedVibe || recipe.vibes.includes(selectedVibe);
-        const matchesDiet = !selectedDiet || recipe.dietaryTags.includes(selectedDiet);
+        const matchesDiet = !selectedDiet || recipe.dietaryInfo.includes(selectedDiet);
         return matchesVibe && matchesDiet;
       });
     },
   });
+
+  const handleLike = (id: string) => {
+    console.log(`Liked recipe: ${id}`);
+    // Add like functionality here
+  };
+
+  const handleDislike = (id: string) => {
+    console.log(`Disliked recipe: ${id}`);
+    // Add dislike functionality here
+  };
+
+  const handleViewDetails = (id: string) => {
+    navigate(`/recipe/${id}`);
+  };
+  
+  const handleVibeSelect = (vibes: string[]) => {
+    // For simplicity, we'll just use the first selected vibe
+    setSelectedVibe(vibes.length > 0 ? vibes[0] : null);
+  };
   
   return (
     <div className="flex flex-col min-h-screen pb-16">
@@ -34,10 +55,7 @@ const Index = () => {
       {/* Vibe and Diet Selections */}
       <div className="px-4 mb-4">
         <VibeSelection 
-          selectedVibe={selectedVibe} 
-          onSelectVibe={setSelectedVibe}
-          selectedDiet={selectedDiet}
-          onSelectDiet={setSelectedDiet}
+          onVibeSelect={handleVibeSelect}
         />
       </div>
       
@@ -45,7 +63,13 @@ const Index = () => {
       <div className="flex-1 px-4 pb-4">
         <div className="grid grid-cols-1 gap-4">
           {recipes.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} />
+            <RecipeCard 
+              key={recipe.id} 
+              recipe={recipe} 
+              onLike={handleLike}
+              onDislike={handleDislike}
+              onViewDetails={handleViewDetails}
+            />
           ))}
         </div>
       </div>

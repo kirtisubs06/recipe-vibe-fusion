@@ -10,6 +10,7 @@ export type Recipe = {
   instructions: string[];
   vibes: string[];
   dietaryInfo: string[];
+  dietaryTags?: string[]; // Added for backward compatibility if needed
 };
 
 export const mockRecipes: Recipe[] = [
