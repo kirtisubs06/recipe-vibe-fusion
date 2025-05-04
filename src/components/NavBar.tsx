@@ -26,7 +26,7 @@ const NavBar: React.FC = () => {
         <div className="relative -mt-8">
           <Link 
             to="/receipt-upload" 
-            className="flex items-center justify-center rounded-full w-16 h-16 bg-recipe-terracota text-white shadow-lg"
+            className="flex items-center justify-center rounded-full w-16 h-16 bg-recipe-terracota text-background shadow-lg"
           >
             <Receipt className="h-7 w-7" />
           </Link>

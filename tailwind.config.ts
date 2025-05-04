@@ -63,11 +63,11 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				recipe: {
-					primary: '#D08224',
-					terracota: '#D08224', // From the image
-					rojo: '#AE431E',     // From the image
-					olive: '#8A8635',     // From the image
-					sunset: '#EAC891'     // From the image
+					primary: '#9b87f5',
+					terracota: '#9b87f5', // Primary Purple
+					rojo: '#7E69AB',     // Secondary Purple
+					olive: '#6E59A5',     // Tertiary Purple
+					sunset: '#D6BCFA'     // Light Purple
 				}
 			},
 			borderRadius: {
