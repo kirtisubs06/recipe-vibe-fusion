@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import RecipeDetailPage from "./pages/RecipeDetailPage";
@@ -12,6 +12,7 @@ import CuisineSelectionPage from "./pages/CuisineSelectionPage";
 import MealPlanPage from "./pages/MealPlanPage";
 import ShoppingListPage from "./pages/ShoppingListPage";
 import ProfilePage from "./pages/ProfilePage";
+import LoadingPage from "./pages/LoadingPage";
 
 const queryClient = new QueryClient();
 
@@ -23,7 +24,9 @@ const App = () => (
         <Sonner position="top-center" closeButton />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            {/* Loading page as the initial route */}
+            <Route path="/" element={<LoadingPage />} />
+            <Route path="/home" element={<Index />} />
             <Route path="/recipe/:id" element={<RecipeDetailPage />} />
             <Route path="/receipt-upload" element={<ReceiptUploadPage />} />
             <Route path="/cuisine-selection" element={<CuisineSelectionPage />} />
