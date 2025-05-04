@@ -1,14 +1,60 @@
 
-import React from 'react';
-import { ArrowLeft, Settings, Edit, Bell, Star, Moon, LogOut } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowLeft, Settings, Edit, Bell, Star, Moon, LogOut, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '@/components/NavBar';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog";
+import { Input } from '@/components/ui/input';
+import { toast } from '@/components/ui/sonner';
+import { useUserPreferences } from '@/store/userPreferences';
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const [newPreference, setNewPreference] = useState('');
+  
+  // Get dietary preferences from our store
+  const { 
+    dietaryPreferences, 
+    addDietaryPreference, 
+    removeDietaryPreference,
+    currentIngredients
+  } = useUserPreferences();
+  
+  const handleAddPreference = () => {
+    if (!newPreference.trim()) return;
+    
+    // Check if preference already exists
+    if (dietaryPreferences.includes(newPreference.trim())) {
+      toast("Preference already exists", {
+        description: "This dietary preference is already in your list"
+      });
+      return;
+    }
+    
+    addDietaryPreference(newPreference.trim());
+    setNewPreference('');
+    
+    toast("Preference added", {
+      description: `Added "${newPreference.trim()}" to your dietary preferences`
+    });
+  };
+  
+  const handleRemovePreference = (preference: string) => {
+    removeDietaryPreference(preference);
+    
+    toast("Preference removed", {
+      description: `Removed "${preference}" from your dietary preferences`
+    });
+  };
   
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -76,18 +122,62 @@ const ProfilePage = () => {
               <span>Cooking Streak</span>
               <span className="text-recipe-terracota font-medium">7 days</span>
             </div>
+            <div className="flex items-center justify-between">
+              <span>Current Ingredients</span>
+              <span className="text-recipe-terracota font-medium">{currentIngredients.length}</span>
+            </div>
           </div>
         </div>
         
         <div className="bg-card rounded-xl shadow-sm p-4 mb-6">
-          <h3 className="font-medium mb-3">Dietary Preferences</h3>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-medium">Dietary Preferences</h3>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-7 w-7 p-0 rounded-full border-recipe-terracota text-recipe-terracota"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Dietary Preference</DialogTitle>
+                </DialogHeader>
+                <div className="flex gap-2 mt-2">
+                  <Input 
+                    placeholder="e.g. Gluten Free" 
+                    value={newPreference}
+                    onChange={(e) => setNewPreference(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddPreference()}
+                  />
+                  <Button onClick={handleAddPreference} className="bg-recipe-terracota">Add</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
           <div className="flex flex-wrap gap-2">
-            <span className="bg-recipe-olive text-white px-3 py-1 rounded-full text-sm">Vegetarian</span>
-            <span className="bg-recipe-olive text-white px-3 py-1 rounded-full text-sm">Low Carb</span>
-            <span className="bg-recipe-olive text-white px-3 py-1 rounded-full text-sm">Dairy Free</span>
-            <Button variant="outline" size="sm" className="rounded-full text-xs px-3 py-1 h-auto border-dashed border-recipe-terracota text-recipe-terracota">
-              + Add
-            </Button>
+            {dietaryPreferences.map((preference) => (
+              <div 
+                key={preference} 
+                className="bg-recipe-olive text-white px-3 py-1 rounded-full text-sm flex items-center gap-1"
+              >
+                <span>{preference}</span>
+                <button 
+                  className="h-4 w-4 rounded-full hover:bg-white/20 flex items-center justify-center"
+                  onClick={() => handleRemovePreference(preference)}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            ))}
+            {dietaryPreferences.length === 0 && (
+              <div className="text-muted-foreground text-sm italic">
+                No dietary preferences set
+              </div>
+            )}
           </div>
         </div>
         

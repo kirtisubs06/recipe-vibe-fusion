@@ -6,11 +6,14 @@ import { mockRecipes } from '@/data/mockRecipes';
 import NavBar from '@/components/NavBar';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
+import { useUserPreferences } from '@/store/userPreferences';
 
 const Index = () => {
   const [selectedCuisine, setSelectedCuisine] = useState<string | null>(null);
   const [selectedDiet, setSelectedDiet] = useState<string | null>(null);
   const navigate = useNavigate();
+  
+  const { addCuisine, selectedCuisines, setCuisines } = useUserPreferences();
   
   const cuisines = [
     { 
@@ -80,18 +83,29 @@ const Index = () => {
   
   const handleCuisineSelect = (cuisine: string) => {
     setSelectedCuisine(cuisine);
+    
+    // Also add to the user preferences
+    if (!selectedCuisines.includes(cuisine)) {
+      addCuisine(cuisine);
+    }
   };
   
   const [currentCuisineIndex, setCurrentCuisineIndex] = useState(0);
+  const [nextCuisineIndex, setNextCuisineIndex] = useState(1);
   const [swipeDirection, setSwipeDirection] = useState<string | null>(null);
   const [touchStartX, setTouchStartX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragDistance, setDragDistance] = useState(0);
-  const cardRef = useRef<HTMLDivElement>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  
+  const currentCardRef = useRef<HTMLDivElement>(null);
+  const nextCardRef = useRef<HTMLDivElement>(null);
   
   const minSwipeDistance = 100;
   
   const handleTouchStart = (e: React.TouchEvent) => {
+    if (isAnimating) return;
+    
     setTouchStartX(e.touches[0].clientX);
     setIsDragging(true);
     setSwipeDirection(null);
@@ -99,27 +113,34 @@ const Index = () => {
   };
   
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return;
+    if (!isDragging || isAnimating) return;
     
     const currentX = e.touches[0].clientX;
     const distance = currentX - touchStartX;
     setDragDistance(distance);
     
-    if (cardRef.current) {
-      cardRef.current.style.transform = `translateX(${distance}px) rotate(${distance * 0.05}deg)`;
+    if (currentCardRef.current) {
+      currentCardRef.current.style.transform = `translateX(${distance}px) rotate(${distance * 0.05}deg)`;
       
       if (distance > 0) {
-        cardRef.current.style.boxShadow = '0 10px 20px rgba(0, 200, 0, 0.2)';
+        currentCardRef.current.style.boxShadow = '0 10px 20px rgba(0, 200, 0, 0.2)';
       } else if (distance < 0) {
-        cardRef.current.style.boxShadow = '0 10px 20px rgba(255, 0, 0, 0.2)';
+        currentCardRef.current.style.boxShadow = '0 10px 20px rgba(255, 0, 0, 0.2)';
       } else {
-        cardRef.current.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
+        currentCardRef.current.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
+      }
+      
+      // Also move the next card to start appearing
+      if (nextCardRef.current) {
+        const nextCardMovement = Math.min(Math.abs(distance) * 0.1, 10);
+        nextCardRef.current.style.transform = `scale(${0.9 + nextCardMovement/100})`;
+        nextCardRef.current.style.opacity = `${0.5 + nextCardMovement/20}`;
       }
     }
   };
   
   const handleTouchEnd = () => {
-    if (!isDragging) return;
+    if (!isDragging || isAnimating) return;
     
     setIsDragging(false);
     
@@ -135,10 +156,7 @@ const Index = () => {
       }
     } else {
       // Reset if not swiped far enough
-      if (cardRef.current) {
-        cardRef.current.style.transform = 'translateX(0) rotate(0deg)';
-        cardRef.current.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
-      }
+      resetCardPositions();
     }
     
     setTouchStartX(0);
@@ -147,38 +165,50 @@ const Index = () => {
   
   // Mouse event handlers for desktop support
   const handleMouseDown = (e: React.MouseEvent) => {
+    if (isAnimating) return;
+    
     setTouchStartX(e.clientX);
     setIsDragging(true);
     setSwipeDirection(null);
     setDragDistance(0);
     
-    if (cardRef.current) {
-      cardRef.current.style.transition = 'none';
+    if (currentCardRef.current) {
+      currentCardRef.current.style.transition = 'none';
+    }
+    if (nextCardRef.current) {
+      nextCardRef.current.style.transition = 'none';
     }
   };
   
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
+    if (!isDragging || isAnimating) return;
     
     const currentX = e.clientX;
     const distance = currentX - touchStartX;
     setDragDistance(distance);
     
-    if (cardRef.current) {
-      cardRef.current.style.transform = `translateX(${distance}px) rotate(${distance * 0.05}deg)`;
+    if (currentCardRef.current) {
+      currentCardRef.current.style.transform = `translateX(${distance}px) rotate(${distance * 0.05}deg)`;
       
       if (distance > 0) {
-        cardRef.current.style.boxShadow = '0 10px 20px rgba(0, 200, 0, 0.2)';
+        currentCardRef.current.style.boxShadow = '0 10px 20px rgba(0, 200, 0, 0.2)';
       } else if (distance < 0) {
-        cardRef.current.style.boxShadow = '0 10px 20px rgba(255, 0, 0, 0.2)';
+        currentCardRef.current.style.boxShadow = '0 10px 20px rgba(255, 0, 0, 0.2)';
       } else {
-        cardRef.current.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
+        currentCardRef.current.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
+      }
+      
+      // Also move the next card to start appearing
+      if (nextCardRef.current) {
+        const nextCardMovement = Math.min(Math.abs(distance) * 0.1, 10);
+        nextCardRef.current.style.transform = `scale(${0.9 + nextCardMovement/100})`;
+        nextCardRef.current.style.opacity = `${0.5 + nextCardMovement/20}`;
       }
     }
   };
   
   const handleMouseUp = () => {
-    if (!isDragging) return;
+    if (!isDragging || isAnimating) return;
     
     setIsDragging(false);
     
@@ -194,10 +224,7 @@ const Index = () => {
       }
     } else {
       // Reset if not swiped far enough
-      if (cardRef.current) {
-        cardRef.current.style.transform = 'translateX(0) rotate(0deg)';
-        cardRef.current.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
-      }
+      resetCardPositions();
     }
     
     setTouchStartX(0);
@@ -225,55 +252,69 @@ const Index = () => {
       window.removeEventListener('mouseup', handleGlobalMouseUp);
       window.removeEventListener('mousemove', handleGlobalMouseMove);
     };
-  }, [isDragging]);
+  }, [isDragging, dragDistance]);
   
   const handleSwipeRight = () => {
-    if (cardRef.current) {
-      cardRef.current.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-      cardRef.current.style.transform = 'translateX(150%) rotate(30deg)';
-      cardRef.current.style.opacity = '0';
+    setIsAnimating(true);
+    
+    if (currentCardRef.current) {
+      currentCardRef.current.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+      currentCardRef.current.style.transform = 'translateX(150%) rotate(30deg)';
+      currentCardRef.current.style.opacity = '0';
     }
     
+    // Select this cuisine
     handleCuisineSelect(cuisines[currentCuisineIndex].id);
     
     setTimeout(() => {
-      if (currentCuisineIndex < cuisines.length - 1) {
-        setCurrentCuisineIndex(currentCuisineIndex + 1);
-      }
-      resetCardStyle();
+      prepareNextCard();
     }, 300);
   };
   
   const handleSwipeLeft = () => {
-    if (cardRef.current) {
-      cardRef.current.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-      cardRef.current.style.transform = 'translateX(-150%) rotate(-30deg)';
-      cardRef.current.style.opacity = '0';
+    setIsAnimating(true);
+    
+    if (currentCardRef.current) {
+      currentCardRef.current.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+      currentCardRef.current.style.transform = 'translateX(-150%) rotate(-30deg)';
+      currentCardRef.current.style.opacity = '0';
     }
     
     setTimeout(() => {
-      if (currentCuisineIndex < cuisines.length - 1) {
-        setCurrentCuisineIndex(currentCuisineIndex + 1);
-      }
-      resetCardStyle();
+      prepareNextCard();
     }, 300);
   };
   
-  const resetCardStyle = () => {
+  const prepareNextCard = () => {
+    // Update indices for the next card
+    if (currentCuisineIndex < cuisines.length - 1) {
+      setCurrentCuisineIndex(nextCuisineIndex);
+      setNextCuisineIndex(prev => (prev + 1) % cuisines.length);
+    } else {
+      // Reset if we've gone through all cuisines
+      setCurrentCuisineIndex(0);
+      setNextCuisineIndex(1);
+    }
+    
     setTimeout(() => {
-      if (cardRef.current) {
-        cardRef.current.style.transition = 'none';
-        cardRef.current.style.transform = 'translateX(0) rotate(0deg)';
-        cardRef.current.style.opacity = '1';
-        cardRef.current.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
-        
-        // Force reflow
-        void cardRef.current.offsetWidth;
-        
-        // Re-enable the transition
-        cardRef.current.style.transition = 'transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease';
-      }
-    }, 300);
+      resetCardPositions();
+      setIsAnimating(false);
+    }, 50);
+  };
+  
+  const resetCardPositions = () => {
+    if (currentCardRef.current) {
+      currentCardRef.current.style.transition = 'transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease';
+      currentCardRef.current.style.transform = 'translateX(0) rotate(0deg)';
+      currentCardRef.current.style.opacity = '1';
+      currentCardRef.current.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
+    }
+    
+    if (nextCardRef.current) {
+      nextCardRef.current.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+      nextCardRef.current.style.transform = 'scale(0.9)';
+      nextCardRef.current.style.opacity = '0.5';
+    }
   };
   
   return (
@@ -299,17 +340,48 @@ const Index = () => {
           What cuisine are you craving?
         </h2>
         <div className="relative h-[400px]">
+          {/* Next card (positioned behind the current card) */}
+          {nextCuisineIndex < cuisines.length && (
+            <div 
+              ref={nextCardRef}
+              className="absolute inset-0 transform scale-90 opacity-50 z-0"
+              style={{
+                transition: 'transform 0.3s ease, opacity 0.3s ease'
+              }}
+            >
+              <div className="w-full h-full relative bg-card rounded-2xl overflow-hidden shadow-xl">
+                <img 
+                  src={cuisines[nextCuisineIndex].image} 
+                  alt={cuisines[nextCuisineIndex].name} 
+                  className="w-full h-full object-cover"
+                  draggable="false"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                  <div className="w-full p-6">
+                    <h3 className="text-3xl font-bold text-white mb-2">
+                      {cuisines[nextCuisineIndex].name}
+                    </h3>
+                    <p className="text-white/90 text-sm mb-4">
+                      {cuisines[nextCuisineIndex].description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Current card */}
           {currentCuisineIndex < cuisines.length && (
             <div 
-              ref={cardRef}
-              className="absolute inset-0 transition-transform"
+              ref={currentCardRef}
+              className="absolute inset-0 transition-transform z-10"
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
               onMouseDown={handleMouseDown}
               style={{
                 transition: 'transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease',
-                cursor: 'grab'
+                cursor: isDragging ? 'grabbing' : 'grab'
               }}
             >
               <div className="w-full h-full relative bg-card rounded-2xl overflow-hidden shadow-xl">
@@ -335,6 +407,7 @@ const Index = () => {
               </div>
             </div>
           )}
+          
           {currentCuisineIndex >= cuisines.length && (
             <div className="flex items-center justify-center h-full bg-card rounded-xl p-8">
               <div className="text-center">
@@ -342,7 +415,11 @@ const Index = () => {
                 <p className="text-cheffy-cream/90 mb-4">
                   We've found some recipes based on your preferences.
                 </p>
-                <Button onClick={() => setCurrentCuisineIndex(0)} className="bg-cheffy-brown">
+                <Button onClick={() => {
+                  setCurrentCuisineIndex(0);
+                  setNextCuisineIndex(1);
+                  setCuisines([]);
+                }} className="bg-cheffy-brown">
                   Choose Again
                 </Button>
               </div>

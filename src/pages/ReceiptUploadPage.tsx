@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Upload, ArrowLeft, Camera, X, FileText, Clipboard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -8,13 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-
-interface ParsedReceiptItem {
-  item: string;
-  quantity: number;
-  unitPrice: number;
-  total: number;
-}
+import { useUserPreferences, ParsedReceiptItem } from '@/store/userPreferences';
 
 const ReceiptUploadPage = () => {
   const navigate = useNavigate();
@@ -23,6 +18,9 @@ const ReceiptUploadPage = () => {
   const [progress, setProgress] = useState(0);
   const [parsedItems, setParsedItems] = useState<ParsedReceiptItem[]>([]);
   const [activeTab, setActiveTab] = useState("upload");
+  
+  // Get the addIngredients function from our user preferences store
+  const addIngredients = useUserPreferences(state => state.addIngredients);
   
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -123,12 +121,14 @@ const ReceiptUploadPage = () => {
       return;
     }
 
+    // Store the parsed items in our user preferences store
+    addIngredients(parsedItems);
+
     toast("Items added to inventory", {
       description: `Added ${parsedItems.length} items to your ingredients inventory`,
     });
     
-    // In a real app, we would save these items to inventory
-    // For now, navigate to the next page
+    // Navigate to the cuisine selection page
     navigate('/cuisine-selection');
   };
 

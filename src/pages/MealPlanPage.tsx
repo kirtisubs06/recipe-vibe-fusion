@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, ShoppingCart, Calendar, Clock, Users } from 'lucide-react';
@@ -6,23 +5,33 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import NavBar from '@/components/NavBar';
 import { mockRecipes } from '@/data/mockRecipes';
+import { useUserPreferences } from '@/store/userPreferences';
+import { generateOptimizedGroceryList, OptimizedGroceryResponse } from '@/services/claudeService';
 
 // Days of the week
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-// Mock function to simulate AI meal planning
-const generateMealPlan = (cuisines: string[]) => {
+// Enhanced meal planning function that uses user preferences
+const generateMealPlan = (cuisines: string[], dietaryPreferences: string[]) => {
   // In a real implementation, this would call an AI API
-  // For now, we'll just randomly select recipes that match the cuisines
+  // For now, we'll filter recipes based on cuisine and dietary preferences
   
   const mealPlan = daysOfWeek.map(day => {
-    // Filter recipes by selected cuisines (using vibes as proxy for cuisines)
-    const matchingRecipes = mockRecipes.filter(recipe => 
-      cuisines.some(cuisine => recipe.vibes.includes(cuisine))
-    );
+    // Filter recipes by selected cuisines and dietary preferences
+    const filteredRecipes = mockRecipes.filter(recipe => {
+      // Check if recipe matches selected cuisines
+      const matchesCuisine = cuisines.length === 0 || 
+        cuisines.some(cuisine => recipe.vibes.includes(cuisine));
+      
+      // Check if recipe satisfies dietary preferences
+      const satisfiesDiet = dietaryPreferences.length === 0 ||
+        dietaryPreferences.every(pref => recipe.dietaryInfo.includes(pref));
+      
+      return matchesCuisine && satisfiesDiet;
+    });
     
     // If no direct matches, use any recipe
-    const availableRecipes = matchingRecipes.length > 0 ? matchingRecipes : mockRecipes;
+    const availableRecipes = filteredRecipes.length > 0 ? filteredRecipes : mockRecipes;
     
     // Randomly select a recipe for the day
     const selectedRecipe = availableRecipes[Math.floor(Math.random() * availableRecipes.length)];
@@ -36,66 +45,75 @@ const generateMealPlan = (cuisines: string[]) => {
   return mealPlan;
 };
 
-// Mock function to generate shopping list
-const generateShoppingList = (mealPlan: { day: string; recipe: any }[]) => {
-  // In a real implementation, this would:
-  // 1. Extract all ingredients from the meal plan
-  // 2. Compare with user's inventory from receipt scanning
-  // 3. Remove what the user already has
-  // 4. Group and optimize the remaining ingredients
-  
-  // For now, we'll just collect unique ingredients from all recipes
-  const allIngredients = mealPlan.flatMap(day => day.recipe.ingredients);
-  
-  // Remove duplicates (simplified)
-  const uniqueIngredients = [...new Set(allIngredients)];
-  
-  return uniqueIngredients;
-};
-
 const MealPlanPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [mealPlan, setMealPlan] = useState<any[]>([]);
-  const [shoppingList, setShoppingList] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [toastShown, setToastShown] = useState(false);
+  const [optimizedGroceryResponse, setOptimizedGroceryResponse] = useState<OptimizedGroceryResponse | null>(null);
   
-  // Get selected cuisines from location state
-  const selectedCuisines = location.state?.selectedCuisines || [];
+  // Get user preferences
+  const { 
+    selectedCuisines: storedCuisines, 
+    dietaryPreferences,
+    currentIngredients
+  } = useUserPreferences();
+  
+  // Get selected cuisines from location state or from our store
+  const locationCuisines = location.state?.selectedCuisines;
+  const selectedCuisines = locationCuisines || storedCuisines;
   
   useEffect(() => {
     // Simulate API call delay
-    const timer = setTimeout(() => {
-      // Generate meal plan based on selected cuisines
-      const generatedMealPlan = generateMealPlan(selectedCuisines);
-      setMealPlan(generatedMealPlan);
-      
-      // Generate shopping list
-      const generatedShoppingList = generateShoppingList(generatedMealPlan);
-      setShoppingList(generatedShoppingList);
-      
-      setIsLoading(false);
-      
-      // Show toast notification only once
-      if (!toastShown) {
-        toast("Your meal plan is ready!", {
-          description: "We've optimized recipes based on your preferences",
+    const timer = setTimeout(async () => {
+      try {
+        // Generate meal plan based on cuisines and dietary preferences
+        const generatedMealPlan = generateMealPlan(selectedCuisines, dietaryPreferences);
+        setMealPlan(generatedMealPlan);
+        
+        // Generate optimized grocery list
+        const optimizedGrocery = await generateOptimizedGroceryList({
+          dietaryPreferences,
+          currentIngredients, 
+          selectedCuisines
         });
-        setToastShown(true);
+        
+        setOptimizedGroceryResponse(optimizedGrocery);
+        setIsLoading(false);
+        
+        // Show toast notification only once
+        if (!toastShown) {
+          toast("Your meal plan is ready!", {
+            description: "We've optimized recipes based on your preferences",
+          });
+          setToastShown(true);
+        }
+      } catch (error) {
+        console.error("Error generating meal plan:", error);
+        toast("Error generating meal plan", {
+          description: "Please try again later",
+        });
+        setIsLoading(false);
       }
     }, 2000);
     
     // Clean up timeout to prevent memory leaks
     return () => clearTimeout(timer);
-  }, [selectedCuisines, toastShown]);
+  }, [selectedCuisines, dietaryPreferences, currentIngredients, toastShown]);
 
   const handleViewRecipe = (recipeId: string) => {
     navigate(`/recipe/${recipeId}`);
   };
   
   const handleViewShoppingList = () => {
-    navigate('/shopping-list', { state: { shoppingList } });
+    // Pass optimized grocery list to shopping list page
+    navigate('/shopping-list', { 
+      state: { 
+        shoppingList: optimizedGroceryResponse?.groceryList || [],
+        mealIdeas: optimizedGroceryResponse?.mealIdeas || [] 
+      } 
+    });
   };
 
   const getDayColor = (index: number) => {
@@ -159,7 +177,7 @@ const MealPlanPage = () => {
             <div className="mb-6 text-center">
               <h2 className="text-xl font-medium mb-2">Your Weekly Meal Plan</h2>
               <p className="text-muted-foreground">
-                We've created a balanced plan with your selected cuisines
+                We've created a balanced plan with your selected cuisines and dietary preferences
               </p>
             </div>
             
@@ -224,7 +242,7 @@ const MealPlanPage = () => {
                 className="bg-cheffy-brown hover:bg-cheffy-brown/90 transition-opacity w-full flex items-center gap-2 justify-center"
               >
                 <ShoppingCart className="h-5 w-5" />
-                View Shopping List
+                View Optimized Shopping List
               </Button>
             </div>
           </>

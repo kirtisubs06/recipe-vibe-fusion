@@ -1,26 +1,76 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import NavBar from '@/components/NavBar';
+import { useUserPreferences } from '@/store/userPreferences';
 
-// Define cuisine types with images
+// Define cuisine types with images and flavors
 const availableCuisines = [
-  { id: 'italian', name: 'Italian', image: 'https://images.unsplash.com/photo-1498579150354-977475b7ea0b?q=80&w=2070&auto=format&fit=crop' },
-  { id: 'chinese', name: 'Chinese', image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?q=80&w=1992&auto=format&fit=crop' },
-  { id: 'mexican', name: 'Mexican', image: 'https://images.unsplash.com/photo-1613514785940-daed07799d9b?q=80&w=2070&auto=format&fit=crop' },
-  { id: 'indian', name: 'Indian', image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=2036&auto=format&fit=crop' },
-  { id: 'japanese', name: 'Japanese', image: 'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?q=80&w=1964&auto=format&fit=crop' },
-  { id: 'thai', name: 'Thai', image: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?q=80&w=2070&auto=format&fit=crop' },
-  { id: 'mediterranean', name: 'Mediterranean', image: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?q=80&w=2071&auto=format&fit=crop' },
-  { id: 'american', name: 'American', image: 'https://images.unsplash.com/photo-1551782450-17144efb9c50?q=80&w=2069&auto=format&fit=crop' },
+  { 
+    id: 'italian', 
+    name: 'Italian', 
+    image: 'https://images.unsplash.com/photo-1498579150354-977475b7ea0b?q=80&w=2070&auto=format&fit=crop',
+    flavors: 'Rich tomato sauces, aromatic herbs, olive oil, aged cheeses'
+  },
+  { 
+    id: 'chinese', 
+    name: 'Chinese', 
+    image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?q=80&w=1992&auto=format&fit=crop',
+    flavors: 'Umami-rich soy sauce, ginger, garlic, balanced sweet and savory'
+  },
+  { 
+    id: 'mexican', 
+    name: 'Mexican', 
+    image: 'https://images.unsplash.com/photo-1613514785940-daed07799d9b?q=80&w=2070&auto=format&fit=crop',
+    flavors: 'Vibrant chilies, zesty lime, fresh cilantro, earthy cumin'
+  },
+  { 
+    id: 'indian', 
+    name: 'Indian', 
+    image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=2036&auto=format&fit=crop',
+    flavors: 'Complex spices, aromatic curry, warming garam masala, cooling yogurt'
+  },
+  { 
+    id: 'japanese', 
+    name: 'Japanese', 
+    image: 'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?q=80&w=1964&auto=format&fit=crop',
+    flavors: 'Delicate dashi, umami-rich miso, fresh seafood, subtle wasabi'
+  },
+  { 
+    id: 'thai', 
+    name: 'Thai', 
+    image: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?q=80&w=2070&auto=format&fit=crop',
+    flavors: 'Balanced sweet, sour, salty, and spicy; lemongrass, fish sauce, lime'
+  },
+  { 
+    id: 'mediterranean', 
+    name: 'Mediterranean', 
+    image: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?q=80&w=2071&auto=format&fit=crop',
+    flavors: 'Fresh herbs, olive oil, lemon, garlic, yogurt, simple preparations'
+  },
+  { 
+    id: 'american', 
+    name: 'American', 
+    image: 'https://images.unsplash.com/photo-1551782450-17144efb9c50?q=80&w=2069&auto=format&fit=crop',
+    flavors: 'Smoky barbecue, melted cheese, comfort food, diverse influences'
+  },
 ];
 
 const CuisineSelectionPage = () => {
   const navigate = useNavigate();
   const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
+  
+  // Get user preferences store functions
+  const { setCuisines, selectedCuisines: storedCuisines } = useUserPreferences();
+  
+  // Load stored cuisines on component mount
+  useEffect(() => {
+    if (storedCuisines.length > 0) {
+      setSelectedCuisines(storedCuisines);
+    }
+  }, [storedCuisines]);
   
   const toggleCuisine = (cuisineId: string) => {
     if (selectedCuisines.includes(cuisineId)) {
@@ -37,6 +87,9 @@ const CuisineSelectionPage = () => {
       });
       return;
     }
+    
+    // Store selected cuisines in our global store
+    setCuisines(selectedCuisines);
     
     // Navigate to meal plan page with selected cuisines
     navigate('/meal-plan', { state: { selectedCuisines } });
@@ -92,8 +145,9 @@ const CuisineSelectionPage = () => {
                   className="object-cover w-full h-full"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                <div className="absolute bottom-0 left-0 right-0 p-3 text-white font-medium">
-                  {cuisine.name}
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <div className="text-white font-medium">{cuisine.name}</div>
+                  <div className="text-white/80 text-xs mt-1">{cuisine.flavors}</div>
                 </div>
                 {selectedCuisines.includes(cuisine.id) && (
                   <div className="absolute inset-0 bg-cheffy-brown/20 flex items-center justify-center">
