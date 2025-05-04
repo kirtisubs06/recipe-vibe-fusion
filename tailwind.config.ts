@@ -68,12 +68,12 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				recipe: {
-					primary: '#D08224',      /* Terracota */
-					terracota: '#D08224',    /* HEX: #D08224 */
-					rojo: '#AE431E',         /* Chile Rojo HEX: #AE431E */
-					olive: '#8A8635',        /* Olive HEX: #8A8635 */
-					sunset: '#EAC891'        /* Sunset HEX: #EAC891 */
+				cheffy: {
+					olive: 'var(--cheffy-olive)',        /* Olive background */
+					cream: 'var(--cheffy-cream)',        /* Cream text & chef hat */
+					brown: 'var(--cheffy-brown)',        /* Brown robot & outlines */
+					"light-brown": 'var(--cheffy-light-brown)', /* Light brown bag */
+					orange: 'var(--cheffy-orange)'       /* Orange carrot */
 				}
 			},
 			borderRadius: {

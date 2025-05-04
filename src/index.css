@@ -1,55 +1,54 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 9%;
-    --foreground: 36 33% 97%;
+    --background: 82 30% 40%;
+    --foreground: 43 77% 83%;
 
-    --card: 0 0% 13%;
-    --card-foreground: 36 33% 97%;
+    --card: 82 30% 35%;
+    --card-foreground: 43 77% 83%;
 
-    --popover: 0 0% 13%;
-    --popover-foreground: 36 33% 97%;
+    --popover: 82 30% 35%;
+    --popover-foreground: 43 77% 83%;
 
-    --primary: 36 33% 97%;
-    --primary-foreground: 0 0% 9%;
+    --primary: 43 77% 83%;
+    --primary-foreground: 82 30% 35%;
 
-    --secondary: 36 100% 50%;
-    --secondary-foreground: 36 33% 97%;
+    --secondary: 25 33% 44%;
+    --secondary-foreground: 43 77% 83%;
 
-    --muted: 0 0% 20%;
-    --muted-foreground: 36 10% 80%;
+    --muted: 82 30% 30%;
+    --muted-foreground: 43 60% 83%;
 
-    --accent: 36 100% 50%;
-    --accent-foreground: 0 0% 9%;
+    --accent: 25 33% 44%;
+    --accent-foreground: 43 77% 83%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 36 33% 97%;
+    --destructive-foreground: 43 77% 83%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 36 33% 97%;
+    --border: 82 30% 30%;
+    --input: 82 30% 30%;
+    --ring: 43 77% 83%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 7%;
-    --sidebar-foreground: 36 33% 97%;
-    --sidebar-primary: 36 33% 97%;
-    --sidebar-primary-foreground: 0 0% 9%;
-    --sidebar-accent: 0 0% 13%;
-    --sidebar-accent-foreground: 36 33% 97%;
-    --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 36 33% 97%;
+    --sidebar-background: 82 30% 28%;
+    --sidebar-foreground: 43 77% 83%;
+    --sidebar-primary: 43 77% 83%;
+    --sidebar-primary-foreground: 82 30% 35%;
+    --sidebar-accent: 82 30% 35%;
+    --sidebar-accent-foreground: 43 77% 83%;
+    --sidebar-border: 82 30% 30%;
+    --sidebar-ring: 43 77% 83%;
 
-    /* Color Palette from the image */
-    --recipe-primary: #D08224;    /* Terracota */
-    --recipe-terracota: #D08224;  /* HEX: #D08224 */
-    --recipe-rojo: #AE431E;       /* Chile Rojo HEX: #AE431E */
-    --recipe-olive: #8A8635;      /* Olive HEX: #8A8635 */
-    --recipe-sunset: #EAC891;     /* Sunset HEX: #EAC891 */
+    /* Cheffy Color Palette */
+    --cheffy-olive: #6B7234;    /* Olive background */
+    --cheffy-cream: #F0E6C3;    /* Cream text & chef hat */
+    --cheffy-brown: #8B5E3C;    /* Brown robot & outlines */
+    --cheffy-light-brown: #C49A6C; /* Light brown bag */
+    --cheffy-orange: #E18942;   /* Orange carrot */
   }
 
   .dark {
@@ -80,7 +79,7 @@
     --border: 0 0% 20%;
     --input: 0 0% 20%;
     --ring: 36 33% 97%;
-    
+
     --sidebar-background: 0 0% 7%;
     --sidebar-foreground: 36 33% 97%;
     --sidebar-primary: 36 33% 97%;
@@ -127,19 +126,19 @@
   }
   
   .vibe-tag {
-    @apply bg-recipe-terracota text-white;
+    @apply bg-cheffy-brown text-cheffy-cream;
   }
   
   .diet-tag {
-    @apply bg-recipe-olive text-white;
+    @apply bg-cheffy-olive text-cheffy-cream;
   }
   
   .time-tag {
-    @apply bg-recipe-sunset text-recipe-rojo;
+    @apply bg-cheffy-cream text-cheffy-brown;
   }
 
   .ingredient-tag {
-    @apply bg-recipe-rojo text-white;
+    @apply bg-cheffy-light-brown text-cheffy-cream;
   }
   
   .glass-card {
@@ -151,7 +150,7 @@
   }
   
   .nav-link.active {
-    @apply text-recipe-terracota;
+    @apply text-cheffy-cream;
   }
   
   .nav-link.inactive {
