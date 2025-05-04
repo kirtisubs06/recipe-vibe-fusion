@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Search, Home, Heart, User, ChefHat, Receipt, Map } from 'lucide-react';
+import { Search, Home, Heart, User, ChefHat, Receipt, Map, ShoppingCart } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 const NavBar: React.FC = () => {
