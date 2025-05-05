@@ -36,11 +36,26 @@ export interface RecipeInteraction {
 }
 
 // Save a recipe to Supabase
-export async function saveRecipe(recipe: Recipe): Promise<boolean> {
+export async function saveRecipe(recipe: any): Promise<boolean> {
   try {
+    // Convert from mock recipe format to supabase format if needed
+    const supabaseRecipe: Recipe = {
+      id: recipe.id,
+      name: recipe.name,
+      image: recipe.image,
+      description: recipe.description,
+      prep_time: recipe.prep_time || recipe.prepTime,
+      servings: recipe.servings,
+      ingredients: recipe.ingredients,
+      instructions: recipe.instructions,
+      cuisine_type: recipe.cuisine_type || recipe.cuisine,
+      dietary_info: recipe.dietary_info || recipe.dietaryInfo,
+      created_at: recipe.created_at || new Date().toISOString()
+    };
+    
     const { data, error } = await supabase
       .from('recipes')
-      .upsert([recipe])
+      .upsert([supabaseRecipe])
       .select();
     
     if (error) {
@@ -160,9 +175,24 @@ export async function getRecipeById(recipeId: string): Promise<Recipe | null> {
       // Fallback to mock recipes if we can't find it in the database
       const mockRecipe = mockRecipes.find(r => r.id === recipeId);
       if (mockRecipe) {
+        // Convert from mock recipe format to supabase format
+        const supabaseRecipe: Recipe = {
+          id: mockRecipe.id,
+          name: mockRecipe.name,
+          image: mockRecipe.image,
+          description: mockRecipe.description,
+          prep_time: mockRecipe.prep_time,
+          servings: mockRecipe.servings,
+          ingredients: mockRecipe.ingredients,
+          instructions: mockRecipe.instructions,
+          cuisine_type: mockRecipe.cuisine_type,
+          dietary_info: mockRecipe.dietary_info,
+          created_at: mockRecipe.created_at || new Date().toISOString()
+        };
+        
         // Save the mock recipe to our database for future use
-        await saveRecipe(mockRecipe);
-        return mockRecipe;
+        await saveRecipe(supabaseRecipe);
+        return supabaseRecipe;
       }
       
       toast.error("Failed to load recipe details");
@@ -199,9 +229,24 @@ export async function syncMockRecipesToSupabase(): Promise<void> {
     
     console.log(`Adding ${recipesToAdd.length} mock recipes to the database`);
     
+    // Convert mock recipes to Supabase format
+    const supabaseRecipes = recipesToAdd.map(recipe => ({
+      id: recipe.id,
+      name: recipe.name,
+      image: recipe.image,
+      description: recipe.description,
+      prep_time: recipe.prep_time,
+      servings: recipe.servings,
+      ingredients: recipe.ingredients,
+      instructions: recipe.instructions,
+      cuisine_type: recipe.cuisine_type,
+      dietary_info: recipe.dietary_info,
+      created_at: recipe.created_at || new Date().toISOString()
+    }));
+    
     const { error: insertError } = await supabase
       .from('recipes')
-      .insert(recipesToAdd);
+      .insert(supabaseRecipes);
     
     if (insertError) {
       console.error("Error inserting mock recipes:", insertError);

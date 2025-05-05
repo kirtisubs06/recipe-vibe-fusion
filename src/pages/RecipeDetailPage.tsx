@@ -30,7 +30,21 @@ const RecipeDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <RecipeDetail recipe={recipe} onBack={handleBack} />
+      <RecipeDetail 
+        recipe={{
+          id: recipe.id,
+          name: recipe.name,
+          image: recipe.image,
+          description: recipe.description,
+          prepTime: recipe.prep_time,
+          servings: recipe.servings,
+          ingredients: recipe.ingredients,
+          instructions: recipe.instructions,
+          vibes: recipe.vibes,
+          dietaryInfo: recipe.dietary_info
+        }} 
+        onBack={handleBack} 
+      />
     </div>
   );
 };

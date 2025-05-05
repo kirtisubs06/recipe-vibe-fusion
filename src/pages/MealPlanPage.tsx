@@ -34,7 +34,7 @@ const generateMealPlan = (cuisines: string[], dietaryPreferences: string[]) => {
       
       // Check if recipe satisfies dietary preferences
       const satisfiesDiet = dietaryPreferences.length === 0 ||
-        dietaryPreferences.every(pref => recipe.dietaryInfo.includes(pref));
+        dietaryPreferences.every(pref => recipe.dietary_info.includes(pref));
       
       return matchesCuisine && satisfiesDiet;
     });

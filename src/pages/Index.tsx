@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import RecipeCard from '@/components/RecipeCard';
@@ -60,8 +59,8 @@ const Index = () => {
     queryFn: () => {
       // Simulate API filtering
       return mockRecipes.filter(recipe => {
-        const matchesCuisine = !selectedCuisine || recipe.cuisine === selectedCuisine;
-        const matchesDiet = !selectedDiet || recipe.dietaryInfo.includes(selectedDiet);
+        const matchesCuisine = !selectedCuisine || recipe.cuisine_type === selectedCuisine;
+        const matchesDiet = !selectedDiet || recipe.dietary_info.includes(selectedDiet);
         return matchesCuisine && matchesDiet;
       });
     },
@@ -438,7 +437,15 @@ const Index = () => {
             {recipes.map((recipe) => (
               <RecipeCard 
                 key={recipe.id} 
-                recipe={recipe} 
+                recipe={{
+                  id: recipe.id,
+                  name: recipe.name,
+                  image: recipe.image,
+                  description: recipe.description,
+                  prepTime: recipe.prep_time,
+                  vibes: recipe.vibes,
+                  dietaryInfo: recipe.dietary_info
+                }}
                 onLike={handleLike}
                 onDislike={handleDislike}
                 onViewDetails={handleViewDetails}
