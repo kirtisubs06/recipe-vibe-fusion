@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Table, 
@@ -60,10 +60,10 @@ const IngredientInventoryPage = () => {
   };
 
   const handleContinue = () => {
-    if (currentIngredients.length === 0) {
-      toast.error('Please add at least one ingredient to continue');
-      return;
-    }
+    navigate('/home');
+  };
+
+  const handleSkip = () => {
     navigate('/home');
   };
 
@@ -72,7 +72,7 @@ const IngredientInventoryPage = () => {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl md:text-4xl font-display mb-6 text-cheffy-cream">My Ingredients</h1>
         <p className="text-lg text-cheffy-cream mb-8">
-          Enter ingredients you currently have in your kitchen to get personalized recipe recommendations.
+          Enter ingredients you currently have in your kitchen to get personalized recipe recommendations, or skip to browse all recipes.
         </p>
 
         <div className="bg-card rounded-lg p-6 shadow-lg mb-8">
@@ -116,7 +116,7 @@ const IngredientInventoryPage = () => {
                 {currentIngredients.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
-                      No ingredients added yet. Add some ingredients to get started!
+                      No ingredients added yet. Add some ingredients to get started or skip to browse all recipes.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -150,9 +150,14 @@ const IngredientInventoryPage = () => {
             >
               Clear All
             </Button>
-            <Button onClick={handleContinue}>
-              Continue to Recipes
-            </Button>
+            <div className="flex gap-4">
+              <Button variant="outline" onClick={handleSkip}>
+                Skip
+              </Button>
+              <Button onClick={handleContinue}>
+                Continue to Recipes
+              </Button>
+            </div>
           </div>
         </div>
       </div>
