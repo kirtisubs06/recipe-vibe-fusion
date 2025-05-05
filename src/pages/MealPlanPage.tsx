@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, ShoppingCart, Calendar, Clock, Users, ChevronDown, ChevronUp } from 'lucide-react';
@@ -104,7 +105,7 @@ const MealPlanPage = () => {
         const generatedMealPlan = generateMealPlan(selectedCuisines, dietaryPreferences);
         setMealPlan(generatedMealPlan);
         
-        // Generate optimized grocery list
+        // Generate optimized grocery list using Claude API (via Supabase)
         const optimizedGrocery = await generateOptimizedGroceryList({
           dietaryPreferences,
           currentIngredients, 

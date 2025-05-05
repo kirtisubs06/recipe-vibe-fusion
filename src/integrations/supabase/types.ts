@@ -14,7 +14,7 @@ export type Database = {
           key: string
         }
         Insert: {
-          key: string
+          key?: string
         }
         Update: {
           key?: string
