@@ -13,6 +13,7 @@ import MealPlanPage from "./pages/MealPlanPage";
 import ShoppingListPage from "./pages/ShoppingListPage";
 import ProfilePage from "./pages/ProfilePage";
 import LoadingPage from "./pages/LoadingPage";
+import IngredientInventoryPage from "./pages/IngredientInventoryPage";
 
 const queryClient = new QueryClient();
 
@@ -24,8 +25,10 @@ const App = () => (
         <Sonner position="top-center" closeButton />
         <BrowserRouter>
           <Routes>
-            {/* Loading page as the initial route */}
-            <Route path="/" element={<LoadingPage />} />
+            {/* Loading page temporarily accessible at /loading */}
+            <Route path="/loading" element={<LoadingPage />} />
+            {/* Set IngredientInventoryPage as the initial route */}
+            <Route path="/" element={<IngredientInventoryPage />} />
             <Route path="/home" element={<Index />} />
             <Route path="/recipe/:id" element={<RecipeDetailPage />} />
             <Route path="/receipt-upload" element={<ReceiptUploadPage />} />
