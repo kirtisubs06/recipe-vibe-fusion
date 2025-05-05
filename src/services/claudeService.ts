@@ -1,3 +1,4 @@
+
 import { ParsedReceiptItem } from "@/store/userPreferences";
 import { searchRecipes, SpoonacularRecipe } from "./spoonacularService";
 
@@ -380,7 +381,12 @@ function generateMealIdeas(
         });
       }
     }
+    
+    // Return the filtered meals
+    return filteredMeals;
   }
   
-  return filteredMeals;
+  // If we didn't enter the if block above, just return the meals array
+  return meals;
 }
+
