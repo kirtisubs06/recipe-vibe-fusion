@@ -63,6 +63,99 @@ export type Database = {
         }
         Relationships: []
       }
+      meal_plans: {
+        Row: {
+          created_at: string | null
+          day_of_week: string
+          id: string
+          recipe_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          day_of_week: string
+          id?: string
+          recipe_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          day_of_week?: string
+          id?: string
+          recipe_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      recipe_interactions: {
+        Row: {
+          created_at: string | null
+          id: string
+          interaction_type: string
+          recipe_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          interaction_type: string
+          recipe_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          interaction_type?: string
+          recipe_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      recipes: {
+        Row: {
+          created_at: string | null
+          cuisine_type: string | null
+          description: string | null
+          dietary_info: Json | null
+          id: string
+          image: string | null
+          ingredients: Json | null
+          instructions: Json | null
+          name: string
+          prep_time: string | null
+          servings: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          cuisine_type?: string | null
+          description?: string | null
+          dietary_info?: Json | null
+          id: string
+          image?: string | null
+          ingredients?: Json | null
+          instructions?: Json | null
+          name: string
+          prep_time?: string | null
+          servings?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          cuisine_type?: string | null
+          description?: string | null
+          dietary_info?: Json | null
+          id?: string
+          image?: string | null
+          ingredients?: Json | null
+          instructions?: Json | null
+          name?: string
+          prep_time?: string | null
+          servings?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

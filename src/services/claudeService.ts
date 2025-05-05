@@ -1,6 +1,6 @@
-
 import { ParsedReceiptItem } from "@/store/userPreferences";
 import { searchRecipes, SpoonacularRecipe } from "./spoonacularService";
+import { supabase } from "@/integrations/supabase/client";
 
 interface GroceryListRequest {
   dietaryPreferences: string[];
@@ -27,6 +27,33 @@ export interface OptimizedGroceryResponse {
   }[];
 }
 
+// Get user's liked recipes
+async function getUserLikedRecipes(): Promise<string[]> {
+  try {
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !userData.user) {
+      return [];
+    }
+    
+    const { data, error } = await supabase
+      .from('recipe_interactions')
+      .select('recipe_id')
+      .eq('user_id', userData.user.id)
+      .eq('interaction_type', 'like');
+    
+    if (error || !data) {
+      console.error("Error fetching liked recipes:", error);
+      return [];
+    }
+    
+    return data.map(item => item.recipe_id);
+  } catch (error) {
+    console.error("Exception fetching liked recipes:", error);
+    return [];
+  }
+}
+
 // Claude API call for grocery list optimization
 export async function generateOptimizedGroceryList(
   request: GroceryListRequest
@@ -34,6 +61,9 @@ export async function generateOptimizedGroceryList(
   try {
     console.log("Generating optimized grocery list with Claude API...");
     console.log("Input data:", request);
+    
+    // Get user's liked recipes to enhance personalization
+    const likedRecipeIds = await getUserLikedRecipes();
     
     // Try to fetch some recipe data from Spoonacular to enhance Claude's recommendations
     let spoonacularData: SpoonacularRecipe[] = [];
@@ -389,4 +419,3 @@ function generateMealIdeas(
   // If we didn't enter the if block above, just return the meals array
   return meals;
 }
-

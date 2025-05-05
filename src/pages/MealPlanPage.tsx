@@ -1,12 +1,21 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, ShoppingCart, Calendar, Clock, Users } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Calendar, Clock, Users, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import NavBar from '@/components/NavBar';
 import { mockRecipes } from '@/data/mockRecipes';
 import { useUserPreferences } from '@/store/userPreferences';
 import { generateOptimizedGroceryList, OptimizedGroceryResponse } from '@/services/claudeService';
+import RecipeExpanded from '@/components/RecipeExpanded';
+import { 
+  initializeDatabase, 
+  getRecipeById,
+  saveMealPlan,
+  Recipe
+} from '@/services/supabaseService';
+import { supabase } from '@/integrations/supabase/client';
 
 // Days of the week
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -52,6 +61,9 @@ const MealPlanPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [toastShown, setToastShown] = useState(false);
   const [optimizedGroceryResponse, setOptimizedGroceryResponse] = useState<OptimizedGroceryResponse | null>(null);
+  const [expandedRecipe, setExpandedRecipe] = useState<Recipe | null>(null);
+  const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
   
   // Get user preferences
   const { 
@@ -63,6 +75,27 @@ const MealPlanPage = () => {
   // Get selected cuisines from location state or from our store
   const locationCuisines = location.state?.selectedCuisines;
   const selectedCuisines = locationCuisines || storedCuisines;
+  
+  // Check for authentication
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (data?.user) {
+        setUser(data.user);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // Initialize database with mock recipes
+  useEffect(() => {
+    const init = async () => {
+      await initializeDatabase();
+    };
+
+    init();
+  }, []);
   
   useEffect(() => {
     // Simulate API call delay
@@ -82,6 +115,17 @@ const MealPlanPage = () => {
         setOptimizedGroceryResponse(optimizedGrocery);
         setIsLoading(false);
         
+        // Save meal plan to Supabase if user is authenticated
+        if (user) {
+          generatedMealPlan.forEach(async (meal) => {
+            await saveMealPlan({
+              user_id: user.id,
+              day_of_week: meal.day,
+              recipe_id: meal.recipe.id
+            });
+          });
+        }
+        
         // Show toast notification only once
         if (!toastShown) {
           toast("Your meal plan is ready!", {
@@ -100,10 +144,19 @@ const MealPlanPage = () => {
     
     // Clean up timeout to prevent memory leaks
     return () => clearTimeout(timer);
-  }, [selectedCuisines, dietaryPreferences, currentIngredients, toastShown]);
+  }, [selectedCuisines, dietaryPreferences, currentIngredients, toastShown, user]);
 
-  const handleViewRecipe = (recipeId: string) => {
-    navigate(`/recipe/${recipeId}`);
+  const handleViewRecipe = async (recipeId: string) => {
+    try {
+      setSelectedRecipeId(recipeId);
+      const recipe = await getRecipeById(recipeId);
+      if (recipe) {
+        setExpandedRecipe(recipe);
+      }
+    } catch (error) {
+      console.error("Error fetching recipe details:", error);
+      toast.error("Could not load recipe details");
+    }
   };
   
   const handleViewShoppingList = () => {
@@ -248,6 +301,14 @@ const MealPlanPage = () => {
           </>
         )}
       </main>
+      
+      {/* Expanded recipe modal */}
+      {expandedRecipe && (
+        <RecipeExpanded 
+          recipe={expandedRecipe} 
+          onClose={() => setExpandedRecipe(null)} 
+        />
+      )}
       
       <NavBar />
     </div>

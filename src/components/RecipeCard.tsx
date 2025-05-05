@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { saveRecipeInteraction } from '@/services/supabaseService';
+import { toast } from '@/components/ui/sonner';
 
 type RecipeCardProps = {
   recipe: {
@@ -27,6 +29,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const [touchStartX, setTouchStartX] = useState(0);
   const [touchEndX, setTouchEndX] = useState(0);
+  const [isProcessingInteraction, setIsProcessingInteraction] = useState(false);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStartX(e.touches[0].clientX);
@@ -39,23 +42,43 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   const handleTouchEnd = () => {
     if (touchStartX - touchEndX > 100) {
       // Swiped left
-      setSwipeDirection('left');
-      onDislike(recipe.id);
+      handleDislike();
     } else if (touchEndX - touchStartX > 100) {
       // Swiped right
-      setSwipeDirection('right');
-      onLike(recipe.id);
+      handleLike();
     }
   };
 
-  const handleLike = () => {
+  const handleLike = async () => {
+    if (isProcessingInteraction) return;
+    
+    setIsProcessingInteraction(true);
     setSwipeDirection('right');
     onLike(recipe.id);
+    
+    try {
+      await saveRecipeInteraction(recipe.id, 'like');
+    } catch (error) {
+      console.error("Error saving like:", error);
+    } finally {
+      setIsProcessingInteraction(false);
+    }
   };
 
-  const handleDislike = () => {
+  const handleDislike = async () => {
+    if (isProcessingInteraction) return;
+    
+    setIsProcessingInteraction(true);
     setSwipeDirection('left');
     onDislike(recipe.id);
+    
+    try {
+      await saveRecipeInteraction(recipe.id, 'dislike');
+    } catch (error) {
+      console.error("Error saving dislike:", error);
+    } finally {
+      setIsProcessingInteraction(false);
+    }
   };
 
   return (
@@ -103,6 +126,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
               variant="outline" 
               size="icon" 
               className="rounded-full bg-white border-gray-300 hover:bg-gray-100"
+              disabled={isProcessingInteraction}
             >
               ✕
             </Button>
@@ -111,6 +135,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
               variant="outline" 
               size="icon" 
               className="rounded-full bg-white border-recipe-mint text-recipe-mint hover:bg-recipe-mint hover:text-white"
+              disabled={isProcessingInteraction}
             >
               ♥
             </Button>
