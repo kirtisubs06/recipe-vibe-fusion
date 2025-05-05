@@ -268,7 +268,7 @@ const MealPlanPage = () => {
                           </div>
                         </div>
                         <div className="mt-2 flex flex-wrap gap-1">
-                          {dayPlan.recipe.dietaryInfo.slice(0, 2).map((info: string) => (
+                          {dayPlan.recipe.dietaryInfo && dayPlan.recipe.dietaryInfo.slice(0, 2).map((info: string) => (
                             <span 
                               key={info} 
                               className="px-2 py-0.5 bg-cheffy-olive text-white text-xs rounded-full"
@@ -276,7 +276,7 @@ const MealPlanPage = () => {
                               {info}
                             </span>
                           ))}
-                          {dayPlan.recipe.dietaryInfo.length > 2 && (
+                          {dayPlan.recipe.dietaryInfo && dayPlan.recipe.dietaryInfo.length > 2 && (
                             <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">
                               +{dayPlan.recipe.dietaryInfo.length - 2}
                             </span>
