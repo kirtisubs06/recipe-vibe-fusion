@@ -60,14 +60,12 @@ export async function saveRecipe(recipe: any): Promise<boolean> {
     
     if (error) {
       console.error("Error saving recipe:", error);
-      toast.error("Failed to save recipe");
       return false;
     }
     
     return true;
   } catch (error) {
     console.error("Exception saving recipe:", error);
-    toast.error("Failed to save recipe");
     return false;
   }
 }
@@ -82,14 +80,12 @@ export async function saveMealPlan(mealPlan: Omit<MealPlan, 'id' | 'created_at' 
     
     if (error) {
       console.error("Error saving meal plan:", error);
-      toast.error("Failed to save meal plan");
       return false;
     }
     
     return true;
   } catch (error) {
     console.error("Exception saving meal plan:", error);
-    toast.error("Failed to save meal plan");
     return false;
   }
 }
@@ -104,7 +100,6 @@ export async function saveRecipeInteraction(
     
     if (userError || !userData.user) {
       console.error("User not authenticated:", userError);
-      toast.error("Please sign in to interact with recipes");
       return false;
     }
     
@@ -119,14 +114,12 @@ export async function saveRecipeInteraction(
     
     if (error) {
       console.error("Error saving recipe interaction:", error);
-      toast.error("Failed to save your preference");
       return false;
     }
     
     return true;
   } catch (error) {
     console.error("Exception saving recipe interaction:", error);
-    toast.error("Failed to save your preference");
     return false;
   }
 }
@@ -148,14 +141,12 @@ export async function getUserMealPlans(): Promise<MealPlan[]> {
     
     if (error) {
       console.error("Error fetching meal plans:", error);
-      toast.error("Failed to load your meal plans");
       return [];
     }
     
     return data as MealPlan[];
   } catch (error) {
     console.error("Exception fetching meal plans:", error);
-    toast.error("Failed to load your meal plans");
     return [];
   }
 }
@@ -190,19 +181,15 @@ export async function getRecipeById(recipeId: string): Promise<Recipe | null> {
           created_at: mockRecipe.created_at || new Date().toISOString()
         };
         
-        // Save the mock recipe to our database for future use
-        await saveRecipe(supabaseRecipe);
         return supabaseRecipe;
       }
       
-      toast.error("Failed to load recipe details");
       return null;
     }
     
     return data as Recipe;
   } catch (error) {
     console.error("Exception fetching recipe:", error);
-    toast.error("Failed to load recipe details");
     return null;
   }
 }
@@ -210,6 +197,17 @@ export async function getRecipeById(recipeId: string): Promise<Recipe | null> {
 // Sync mock recipes to Supabase
 export async function syncMockRecipesToSupabase(): Promise<void> {
   try {
+    // First check if we have permission to insert recipes
+    const { error: testError } = await supabase
+      .from('recipes')
+      .select('id')
+      .limit(1);
+    
+    if (testError && testError.code === '42501') {
+      console.warn("No permission to access recipes table due to RLS policies. Using mock recipes only.");
+      return;
+    }
+    
     const { data: existingRecipes, error: fetchError } = await supabase
       .from('recipes')
       .select('id');
@@ -219,7 +217,7 @@ export async function syncMockRecipesToSupabase(): Promise<void> {
       return;
     }
     
-    const existingIds = new Set(existingRecipes.map(r => r.id));
+    const existingIds = new Set(existingRecipes?.map(r => r.id) || []);
     const recipesToAdd = mockRecipes.filter(recipe => !existingIds.has(recipe.id));
     
     if (recipesToAdd.length === 0) {
@@ -250,12 +248,14 @@ export async function syncMockRecipesToSupabase(): Promise<void> {
     
     if (insertError) {
       console.error("Error inserting mock recipes:", insertError);
+      // Continue execution even if we can't insert - we'll use mock recipes
       return;
     }
     
     console.log("Successfully synced mock recipes to Supabase");
   } catch (error) {
     console.error("Exception syncing mock recipes:", error);
+    // Continue execution - we'll use mock recipes as fallback
   }
 }
 
