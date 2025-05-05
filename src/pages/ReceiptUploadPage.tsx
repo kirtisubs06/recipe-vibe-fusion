@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, ArrowLeft, Camera, X, FileText, Clipboard } from 'lucide-react';
+import { Upload, ArrowLeft, Camera, X, FileText, Clipboard, Plus, PlusCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
@@ -8,7 +8,10 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useUserPreferences, ParsedReceiptItem } from '@/store/userPreferences';
+import { supabase } from "@/integrations/supabase/client";
 
 const ReceiptUploadPage = () => {
   const navigate = useNavigate();
@@ -17,9 +20,12 @@ const ReceiptUploadPage = () => {
   const [progress, setProgress] = useState(0);
   const [parsedItems, setParsedItems] = useState<ParsedReceiptItem[]>([]);
   const [activeTab, setActiveTab] = useState("upload");
+  const [newIngredientName, setNewIngredientName] = useState('');
+  const [newIngredientQuantity, setNewIngredientQuantity] = useState('1');
+  const [manualIngredients, setManualIngredients] = useState<ParsedReceiptItem[]>([]);
   
   // Get the addIngredients function from our user preferences store
-  const addIngredients = useUserPreferences(state => state.addIngredients);
+  const { addIngredients, currentIngredients } = useUserPreferences();
   
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -112,19 +118,71 @@ const ReceiptUploadPage = () => {
     setParsedItems(mockParsedItems);
   };
 
+  const handleAddManualIngredient = () => {
+    if (!newIngredientName.trim()) {
+      toast.error("Ingredient name cannot be empty");
+      return;
+    }
+
+    const quantity = parseFloat(newIngredientQuantity) || 1;
+    
+    // Create a new ingredient item
+    const newItem: ParsedReceiptItem = {
+      item: newIngredientName.trim(),
+      quantity: quantity,
+      unitPrice: 0, // We don't have this for manual entries
+      total: 0 // We don't have this for manual entries
+    };
+    
+    // Add to local state
+    setManualIngredients([...manualIngredients, newItem]);
+    
+    // Save to Supabase
+    saveIngredientToSupabase(newItem);
+    
+    // Clear the inputs
+    setNewIngredientName('');
+    setNewIngredientQuantity('1');
+    
+    toast.success(`Added ${newItem.item} to your ingredients`);
+  };
+
+  const saveIngredientToSupabase = async (ingredient: ParsedReceiptItem) => {
+    try {
+      const { data, error } = await supabase
+        .from('groceries')
+        .insert([
+          { 
+            ingredient: ingredient.item, 
+            quantity: ingredient.quantity,
+            user: 'current-user' // In a real app with auth, this would be the user ID
+          }
+        ]);
+      
+      if (error) {
+        console.error("Error saving ingredient to Supabase:", error);
+        toast.error("Failed to save ingredient to database");
+      }
+    } catch (err) {
+      console.error("Exception saving ingredient to Supabase:", err);
+    }
+  };
+
   const handleSaveToInventory = () => {
-    if (parsedItems.length === 0) {
+    const itemsToAdd = [...parsedItems, ...manualIngredients];
+    
+    if (itemsToAdd.length === 0) {
       toast("No items to save", {
-        description: "Please process a receipt first",
+        description: "Please process a receipt or add ingredients manually",
       });
       return;
     }
 
     // Store the parsed items in our user preferences store
-    addIngredients(parsedItems);
+    addIngredients(itemsToAdd);
 
     toast("Items added to inventory", {
-      description: `Added ${parsedItems.length} items to your ingredients inventory`,
+      description: `Added ${itemsToAdd.length} items to your ingredients inventory`,
     });
     
     // Navigate to the cuisine selection page
@@ -152,6 +210,33 @@ const ReceiptUploadPage = () => {
       });
   };
 
+  const handleRemoveManualIngredient = async (index: number) => {
+    const ingredientToRemove = manualIngredients[index];
+    
+    // Remove from local state
+    const updatedIngredients = [...manualIngredients];
+    updatedIngredients.splice(index, 1);
+    setManualIngredients(updatedIngredients);
+    
+    // Remove from Supabase
+    try {
+      const { error } = await supabase
+        .from('groceries')
+        .delete()
+        .eq('ingredient', ingredientToRemove.item)
+        .eq('user', 'current-user'); // In a real app with auth, this would be the user ID
+      
+      if (error) {
+        console.error("Error removing ingredient from Supabase:", error);
+        toast.error("Failed to remove ingredient from database");
+      }
+    } catch (err) {
+      console.error("Exception removing ingredient from Supabase:", err);
+    }
+    
+    toast(`Removed ${ingredientToRemove.item}`);
+  };
+
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
@@ -175,8 +260,9 @@ const ReceiptUploadPage = () => {
 
       <main className="container mx-auto p-4 max-w-md">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="upload" className="text-cheffy-cream">Upload Receipt</TabsTrigger>
+            <TabsTrigger value="manual" className="text-cheffy-cream">Manual Entry</TabsTrigger>
             <TabsTrigger value="results" className="text-cheffy-cream">Results</TabsTrigger>
           </TabsList>
           
@@ -261,6 +347,103 @@ const ReceiptUploadPage = () => {
             </Card>
           </TabsContent>
           
+          <TabsContent value="manual">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <p className="text-cheffy-cream mb-4">
+                      Manually add ingredients you have on hand
+                    </p>
+                  </div>
+                  
+                  <div className="flex flex-col gap-4">
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="col-span-2">
+                        <Label htmlFor="ingredient-name" className="text-cheffy-cream mb-1 block">Ingredient</Label>
+                        <Input 
+                          id="ingredient-name"
+                          placeholder="e.g. Tomatoes" 
+                          value={newIngredientName}
+                          onChange={(e) => setNewIngredientName(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleAddManualIngredient()}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="ingredient-quantity" className="text-cheffy-cream mb-1 block">Quantity</Label>
+                        <Input 
+                          id="ingredient-quantity"
+                          type="number" 
+                          min="0.1"
+                          step="0.1"
+                          placeholder="1" 
+                          value={newIngredientQuantity}
+                          onChange={(e) => setNewIngredientQuantity(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleAddManualIngredient()}
+                        />
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      onClick={handleAddManualIngredient}
+                      className="bg-cheffy-orange hover:bg-cheffy-orange/90 w-full text-white"
+                    >
+                      <PlusCircle className="h-4 w-4 mr-2" /> Add Ingredient
+                    </Button>
+                  </div>
+                  
+                  <div className="mt-6">
+                    <h3 className="font-medium mb-3 text-cheffy-cream">Added Ingredients</h3>
+                    
+                    {manualIngredients.length === 0 ? (
+                      <div className="text-center py-6 text-cheffy-cream/70 italic">
+                        No ingredients added yet
+                      </div>
+                    ) : (
+                      <div className="border rounded-md overflow-hidden border-cheffy-cream">
+                        <table className="w-full text-sm">
+                          <thead className="bg-muted">
+                            <tr>
+                              <th className="text-left p-2 text-cheffy-cream">Ingredient</th>
+                              <th className="text-right p-2 text-cheffy-cream">Quantity</th>
+                              <th className="text-right p-2 text-cheffy-cream">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {manualIngredients.map((item, i) => (
+                              <tr key={i} className={i % 2 ? "bg-muted/20" : ""}>
+                                <td className="p-2 text-cheffy-cream">{item.item}</td>
+                                <td className="p-2 text-right text-cheffy-cream">{item.quantity}</td>
+                                <td className="p-2 text-right">
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-8 w-8 p-0 text-destructive hover:bg-destructive/10"
+                                    onClick={() => handleRemoveManualIngredient(i)}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <Button 
+                    onClick={handleSaveToInventory} 
+                    className="w-full mt-4 bg-cheffy-orange hover:bg-cheffy-orange/90 text-white"
+                    disabled={manualIngredients.length === 0 && parsedItems.length === 0}
+                  >
+                    Add All Items to Inventory
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
           <TabsContent value="results">
             <Card>
               <CardContent className="pt-6">
@@ -320,7 +503,7 @@ const ReceiptUploadPage = () => {
                   <Button 
                     onClick={handleSaveToInventory} 
                     className="w-full bg-cheffy-orange hover:bg-cheffy-orange/90 text-white"
-                    disabled={parsedItems.length === 0}
+                    disabled={parsedItems.length === 0 && manualIngredients.length === 0}
                   >
                     Add Items to Inventory
                   </Button>

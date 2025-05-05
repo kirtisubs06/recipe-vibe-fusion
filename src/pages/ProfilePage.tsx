@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Settings, Edit, Bell, Star, Moon, LogOut, Plus, X, Key } from 'lucide-react';
+
+import React, { useState } from 'react';
+import { ArrowLeft, Settings, Edit, Bell, Moon, LogOut, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '@/components/NavBar';
@@ -15,13 +16,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
 import { useUserPreferences } from '@/store/userPreferences';
-import { getSpoonacularApiKey, setSpoonacularApiKey } from '@/services/spoonacularService';
 
 const ProfilePage = () => {
   const navigate = useNavigate();
   const [newPreference, setNewPreference] = useState('');
-  const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
-  const [apiKey, setApiKey] = useState('');
   
   // Get dietary preferences from our store
   const { 
@@ -30,11 +28,6 @@ const ProfilePage = () => {
     removeDietaryPreference,
     currentIngredients
   } = useUserPreferences();
-  
-  // Load API key on component mount
-  useEffect(() => {
-    setApiKey(getSpoonacularApiKey() || '');
-  }, []);
   
   const handleAddPreference = () => {
     if (!newPreference.trim()) return;
@@ -61,16 +54,6 @@ const ProfilePage = () => {
     toast("Preference removed", {
       description: `Removed "${preference}" from your dietary preferences`
     });
-  };
-
-  const handleSaveApiKey = () => {
-    if (apiKey.trim()) {
-      setSpoonacularApiKey(apiKey.trim());
-      setApiKeyDialogOpen(false);
-      toast.success("API key saved successfully");
-    } else {
-      toast.error("Please enter a valid API key");
-    }
   };
   
   return (
@@ -107,49 +90,7 @@ const ProfilePage = () => {
           </Button>
         </div>
 
-        <div className="bg-card rounded-xl shadow-sm p-4 mb-4">
-          <h3 className="font-medium mb-3 text-cheffy-cream">API Settings</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Key className="h-4 w-4 text-cheffy-orange" />
-                <span className="text-cheffy-cream">Spoonacular API Key</span>
-              </div>
-              <Dialog open={apiKeyDialogOpen} onOpenChange={setApiKeyDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="h-8 border-cheffy-orange text-cheffy-orange"
-                  >
-                    {apiKey ? 'Change Key' : 'Set Key'}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Enter Spoonacular API Key</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4 py-2">
-                    <p className="text-sm text-muted-foreground">
-                      Default API key is already set. You can customize it if needed.
-                    </p>
-                    <Input 
-                      placeholder="Enter your API key" 
-                      value={apiKey}
-                      onChange={(e) => setApiKey(e.target.value)}
-                    />
-                    <Button 
-                      onClick={handleSaveApiKey}
-                      className="w-full bg-cheffy-orange hover:bg-cheffy-orange/90 text-white"
-                    >
-                      Save API Key
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-          </div>
-        </div>
+        {/* Removed API Key section */}
 
         <div className="bg-card rounded-xl shadow-sm p-4 mb-4">
           <h3 className="font-medium mb-3 text-cheffy-cream">Preferences</h3>
