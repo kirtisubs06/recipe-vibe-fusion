@@ -44,9 +44,9 @@
     --sidebar-border: 82 30% 30%;
     --sidebar-ring: 43 77% 83%;
 
-    /* Cheffy Color Palette - Updated with darker cream color */
+    /* Cheffy Color Palette - Updated with darker cream colors for better contrast */
     --cheffy-olive: #6B7234;    /* Olive background */
-    --cheffy-cream: #E0D6B3;    /* Darker cream text (updated from F0E6C3) */
+    --cheffy-cream: #D0C6A3;    /* Much darker cream text (updated from E0D6B3) */
     --cheffy-brown: #8B5E3C;    /* Brown robot & outlines */
     --cheffy-light-brown: #C49A6C; /* Light brown bag */
     --cheffy-orange: #E18942;   /* Orange carrot */
@@ -135,7 +135,7 @@
   }
   
   .time-tag {
-    @apply bg-cheffy-cream text-cheffy-brown;
+    @apply bg-cheffy-cream text-cheffy-brown font-medium;
   }
 
   .ingredient-tag {

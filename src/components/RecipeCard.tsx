@@ -113,7 +113,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             onClick={() => onViewDetails(recipe.id)}
             size="sm" 
             variant="outline"
-            className="flex items-center gap-1"
+            className="flex items-center gap-1 bg-cheffy-brown hover:bg-cheffy-brown/90 text-cheffy-cream border-cheffy-brown"
           >
             View <ChevronRight className="h-4 w-4" />
           </Button>
@@ -125,7 +125,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
               onClick={handleDislike}
               variant="outline" 
               size="icon" 
-              className="rounded-full bg-white border-gray-300 hover:bg-gray-100"
+              className="rounded-full bg-white border-gray-300 hover:bg-gray-100 text-cheffy-brown"
               disabled={isProcessingInteraction}
             >
               ✕
@@ -134,7 +134,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
               onClick={handleLike}
               variant="outline" 
               size="icon" 
-              className="rounded-full bg-white border-recipe-mint text-recipe-mint hover:bg-recipe-mint hover:text-white"
+              className="rounded-full bg-white border-cheffy-brown text-cheffy-brown hover:bg-cheffy-brown hover:text-cheffy-cream"
               disabled={isProcessingInteraction}
             >
               ♥

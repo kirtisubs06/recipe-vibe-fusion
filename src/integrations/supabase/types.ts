@@ -9,6 +9,18 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      "API KEY": {
+        Row: {
+          key: string
+        }
+        Insert: {
+          key: string
+        }
+        Update: {
+          key?: string
+        }
+        Relationships: []
+      }
       "dietary preferences": {
         Row: {
           "dietary preferences": string | null
