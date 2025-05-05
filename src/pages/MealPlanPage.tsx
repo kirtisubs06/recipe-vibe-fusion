@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, ShoppingCart, Calendar, Clock, Users, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Calendar, Clock, Users, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import NavBar from '@/components/NavBar';
@@ -16,7 +16,8 @@ import {
   Recipe
 } from '@/services/supabaseService';
 import { supabase } from '@/integrations/supabase/client';
-import { searchRecipes } from '@/services/spoonacularService';
+import { searchRecipes, SearchRecipesParams } from '@/services/spoonacularService';
+import { Card, CardContent } from '@/components/ui/card';
 
 // Days of the week
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -43,7 +44,7 @@ const generateMealPlan = async (cuisines: string[], dietaryPreferences: string[]
     for (const day of daysOfWeek) {
       for (const type of mealTypes) {
         // Construct search parameters based on meal type and preferences
-        const params = {
+        const params: SearchRecipesParams = {
           type: type.toLowerCase(),
           diet: dietaryPreferences.join(','),
           cuisine: cuisines.length > 0 ? cuisines.join(',') : undefined,
@@ -212,6 +213,7 @@ const MealPlanPage = () => {
   const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
   const [collapsedDays, setCollapsedDays] = useState<Record<string, boolean>>({});
+  const [userIngredients, setUserIngredients] = useState<string[]>([]);
   
   // Get user preferences
   const { 
@@ -224,12 +226,22 @@ const MealPlanPage = () => {
   const locationCuisines = location.state?.selectedCuisines;
   const selectedCuisines = locationCuisines || storedCuisines;
   
-  // Check for authentication
+  // Check for authentication and get user ingredients
   useEffect(() => {
     const fetchUser = async () => {
       const { data, error } = await supabase.auth.getUser();
       if (data?.user) {
         setUser(data.user);
+        
+        // Fetch user ingredients from Supabase
+        const { data: groceryData, error: groceryError } = await supabase
+          .from('groceries')
+          .select('ingredient')
+          .eq('user', data.user.id);
+        
+        if (!groceryError && groceryData) {
+          setUserIngredients(groceryData.map(item => item.ingredient.toLowerCase()));
+        }
       }
     };
 
@@ -341,6 +353,13 @@ const MealPlanPage = () => {
       [day]: !prev[day]
     }));
   };
+
+  const isUserIngredient = (ingredient: string): boolean => {
+    return userIngredients.some(item => 
+      ingredient.toLowerCase().includes(item) || 
+      item.includes(ingredient.toLowerCase())
+    );
+  };
   
   // Group meal plan by day
   const mealPlanByDay = mealPlan.reduce((acc, meal) => {
@@ -424,50 +443,99 @@ const MealPlanPage = () => {
                     </div>
                     
                     {!isCollapsed && (
-                      <div className="divide-y divide-gray-100">
+                      <div className="divide-y divide-gray-200">
                         {mealTypes.map((type) => {
                           const meal = dayMeals.find(m => m.mealType === type);
                           if (!meal) return null;
                           
                           return (
-                            <div key={`${day}-${type}`} className="p-3">
-                              <div className="text-sm font-medium text-cheffy-cream/70 mb-2">{type}</div>
-                              <div 
-                                className="flex cursor-pointer"
-                                onClick={() => handleViewRecipe(meal.recipe.id)}
-                              >
-                                <div className="w-16 h-16 rounded-lg overflow-hidden mr-3">
-                                  <img 
-                                    src={meal.recipe.image} 
-                                    alt={meal.recipe.name}
-                                    className="w-full h-full object-cover" 
-                                  />
-                                </div>
-                                <div>
-                                  <h3 className="font-medium">{meal.recipe.name}</h3>
-                                  <div className="flex items-center text-xs text-muted-foreground gap-3 mt-1">
-                                    <div className="flex items-center gap-1">
-                                      <Clock className="h-3 w-3" />
-                                      <span>{meal.recipe.prepTime || meal.recipe.prep_time}</span>
+                            <Card key={`${day}-${type}`} className="border-0 rounded-none">
+                              <CardContent className="p-4">
+                                <div className="text-base font-semibold text-black mb-2">{type}</div>
+                                <div 
+                                  className="cursor-pointer"
+                                  onClick={() => handleViewRecipe(meal.recipe.id)}
+                                >
+                                  <div className="flex">
+                                    <div className="w-20 h-20 rounded-lg overflow-hidden mr-4">
+                                      <img 
+                                        src={meal.recipe.image} 
+                                        alt={meal.recipe.name}
+                                        className="w-full h-full object-cover" 
+                                      />
                                     </div>
-                                    <div className="flex items-center gap-1">
-                                      <Users className="h-3 w-3" />
-                                      <span>{meal.recipe.servings} servings</span>
+                                    <div>
+                                      <h3 className="font-medium text-lg text-black">
+                                        {meal.recipe.name}
+                                      </h3>
+                                      <p className="text-sm text-gray-700 mt-1">
+                                        {meal.recipe.description}
+                                      </p>
+                                      <div className="flex items-center text-xs text-gray-600 gap-3 mt-2">
+                                        <div className="flex items-center gap-1">
+                                          <Clock className="h-3 w-3" />
+                                          <span>{meal.recipe.prepTime || meal.recipe.prep_time}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                          <Users className="h-3 w-3" />
+                                          <span>{meal.recipe.servings} servings</span>
+                                        </div>
+                                      </div>
+                                      <div className="mt-2 flex flex-wrap gap-1">
+                                        {meal.recipe.dietaryInfo && meal.recipe.dietaryInfo.slice(0, 2).map((info: string) => (
+                                          <span 
+                                            key={info} 
+                                            className="px-2 py-0.5 bg-cheffy-olive text-white text-xs rounded-full"
+                                          >
+                                            {info}
+                                          </span>
+                                        ))}
+                                      </div>
                                     </div>
                                   </div>
-                                  <div className="mt-2 flex flex-wrap gap-1">
-                                    {meal.recipe.dietaryInfo && meal.recipe.dietaryInfo.slice(0, 2).map((info: string) => (
-                                      <span 
-                                        key={info} 
-                                        className="px-2 py-0.5 bg-cheffy-olive text-cheffy-cream text-xs rounded-full"
-                                      >
-                                        {info}
-                                      </span>
-                                    ))}
+                                  
+                                  {/* Summary of ingredients with owned vs. needed indication */}
+                                  {meal.recipe.ingredients && meal.recipe.ingredients.length > 0 && (
+                                    <div className="mt-3 bg-gray-50 p-3 rounded-lg">
+                                      <h4 className="text-sm font-medium text-black mb-2">Ingredients:</h4>
+                                      <ul className="grid grid-cols-2 gap-1">
+                                        {meal.recipe.ingredients.slice(0, 6).map((ingredient: string, idx: number) => {
+                                          const owned = isUserIngredient(ingredient);
+                                          return (
+                                            <li key={idx} className="flex items-start text-sm text-gray-800">
+                                              {owned ? (
+                                                <Check className="h-4 w-4 text-green-500 mr-1 mt-0.5 flex-shrink-0" />
+                                              ) : (
+                                                <ShoppingCart className="h-4 w-4 text-orange-500 mr-1 mt-0.5 flex-shrink-0" />
+                                              )}
+                                              <span className={owned ? "text-black" : "text-gray-600"}>
+                                                {ingredient}
+                                              </span>
+                                            </li>
+                                          );
+                                        })}
+                                        {meal.recipe.ingredients.length > 6 && (
+                                          <li className="text-sm text-blue-600 mt-1 col-span-2">
+                                            + {meal.recipe.ingredients.length - 6} more ingredients
+                                          </li>
+                                        )}
+                                      </ul>
+                                    </div>
+                                  )}
+                                  
+                                  {/* Tap to view full recipe */}
+                                  <div className="mt-3 text-center">
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm" 
+                                      className="text-sm text-cheffy-brown border-cheffy-brown w-full"
+                                    >
+                                      Tap to view full recipe
+                                    </Button>
                                   </div>
                                 </div>
-                              </div>
-                            </div>
+                              </CardContent>
+                            </Card>
                           );
                         })}
                       </div>
@@ -490,11 +558,12 @@ const MealPlanPage = () => {
         )}
       </main>
       
-      {/* Expanded recipe modal */}
+      {/* Expanded recipe modal - Let's enhance this component to show more detailed recipes */}
       {expandedRecipe && (
         <RecipeExpanded 
           recipe={expandedRecipe} 
           onClose={() => setExpandedRecipe(null)} 
+          userIngredients={userIngredients}
         />
       )}
       
