@@ -1,4 +1,3 @@
-
 import { toast } from '@/components/ui/sonner';
 
 // Define types
@@ -37,10 +36,9 @@ export interface SearchRecipesParams {
   number?: number;
 }
 
-// Temporary API key handling
-// In production, use Supabase Edge Functions for secure API access
-// This is just for development purposes
-let SPOONACULAR_API_KEY = '';
+// API key handling
+// Default API key is now set to the provided key
+let SPOONACULAR_API_KEY = 'abebef3b422e46699ed04d721ac16a23';
 
 export const setSpoonacularApiKey = (key: string) => {
   SPOONACULAR_API_KEY = key;
@@ -56,7 +54,8 @@ export const getSpoonacularApiKey = (): string => {
     return storedKey;
   }
   
-  return '';
+  // Return the default API key if no custom key is set
+  return 'abebef3b422e46699ed04d721ac16a23';
 };
 
 // API endpoints

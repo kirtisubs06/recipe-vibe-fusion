@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Settings, Edit, Bell, Star, Moon, LogOut, Plus, X, Key } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -132,11 +131,7 @@ const ProfilePage = () => {
                   </DialogHeader>
                   <div className="space-y-4 py-2">
                     <p className="text-sm text-muted-foreground">
-                      Get your API key from <a href="https://spoonacular.com/food-api" 
-                         className="text-cheffy-orange underline" 
-                         target="_blank" rel="noreferrer">
-                        Spoonacular
-                      </a>
+                      Default API key is already set. You can customize it if needed.
                     </p>
                     <Input 
                       placeholder="Enter your API key" 
