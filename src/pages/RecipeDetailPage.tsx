@@ -62,8 +62,13 @@ const RecipeDetailPage = () => {
           servings: recipe.servings,
           ingredients: recipe.ingredients,
           instructions: recipe.instructions,
-          vibes: recipe.vibes || [],
-          dietaryInfo: recipe.dietary_info || []
+          vibes: recipe.dietary_info?.filter(info => 
+            ['Quick & Easy', 'Healthy', 'Gourmet', 'Date Night', 'Comfort Food', 
+             'Family Meal', 'Budget-Friendly'].includes(info)
+          ) || [],
+          dietaryInfo: recipe.dietary_info?.filter(info => 
+            ['Vegetarian', 'Vegan', 'Gluten-Free', 'Low Calorie', 'High Protein'].includes(info)
+          ) || []
         }} 
         onBack={handleBack} 
       />
