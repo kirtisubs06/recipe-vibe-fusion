@@ -4,14 +4,14 @@ export type Recipe = {
   name: string;
   image: string;
   description: string;
-  prepTime: string;
+  prep_time: string; // Changed from prepTime
   servings: number;
   ingredients: string[];
   instructions: string[];
   vibes: string[];
-  dietaryInfo: string[];
-  dietaryTags?: string[]; // Added for backward compatibility if needed
-  cuisine: string; // Added cuisine property
+  dietary_info: string[]; // Changed from dietaryInfo
+  cuisine_type: string; // Changed from cuisine
+  created_at?: string; // Added to match supabaseService.Recipe type
 };
 
 export const mockRecipes: Recipe[] = [
@@ -20,7 +20,7 @@ export const mockRecipes: Recipe[] = [
     name: "Creamy Garlic Butter Tuscan Salmon",
     image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=80&w=2070&auto=format&fit=crop",
     description: "Pan-seared salmon in a delicious creamy garlic butter sauce with spinach and sun-dried tomatoes.",
-    prepTime: "25 mins",
+    prep_time: "25 mins", // Changed from prepTime
     servings: 4,
     ingredients: [
       "4 salmon fillets",
@@ -46,15 +46,15 @@ export const mockRecipes: Recipe[] = [
       "Garnish with parsley and serve immediately."
     ],
     vibes: ["Gourmet", "Date Night"],
-    dietaryInfo: ["High Protein"],
-    cuisine: "italian"
+    dietary_info: ["High Protein"], // Changed from dietaryInfo
+    cuisine_type: "italian" // Changed from cuisine
   },
   {
     id: "2",
     name: "Quick Veggie Stir Fry",
     image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=2070&auto=format&fit=crop",
     description: "A colorful, nutritious vegetable stir-fry that comes together in minutes.",
-    prepTime: "15 mins",
+    prep_time: "15 mins", // Changed from prepTime
     servings: 2,
     ingredients: [
       "2 tbsp sesame oil",
@@ -80,15 +80,15 @@ export const mockRecipes: Recipe[] = [
       "Garnish with green onions and sesame seeds before serving."
     ],
     vibes: ["Quick & Easy", "Healthy"],
-    dietaryInfo: ["Vegetarian", "Low Calorie"],
-    cuisine: "chinese"
+    dietary_info: ["Vegetarian", "Low Calorie"], // Changed from dietaryInfo
+    cuisine_type: "chinese" // Changed from cuisine
   },
   {
     id: "3",
     name: "Homestyle Chicken Noodle Soup",
     image: "https://images.unsplash.com/photo-1547592180-85f173990554?q=80&w=1170&auto=format&fit=crop",
     description: "Classic comfort food with tender chicken, vegetables, and egg noodles in a flavorful broth.",
-    prepTime: "45 mins",
+    prep_time: "45 mins", // Changed from prepTime
     servings: 6,
     ingredients: [
       "2 tbsp olive oil",
@@ -114,15 +114,15 @@ export const mockRecipes: Recipe[] = [
       "Remove bay leaves, garnish with fresh parsley, and serve warm."
     ],
     vibes: ["Comfort Food", "Family Meal"],
-    dietaryInfo: ["High Protein"],
-    cuisine: "american"
+    dietary_info: ["High Protein"], // Changed from dietaryInfo
+    cuisine_type: "american" // Changed from cuisine
   },
   {
     id: "4",
     name: "Rainbow Buddha Bowl",
     image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1780&auto=format&fit=crop",
     description: "A vibrant, nutrient-packed bowl with quinoa, roasted vegetables, and tahini dressing.",
-    prepTime: "30 mins",
+    prep_time: "30 mins", // Changed from prepTime
     servings: 2,
     ingredients: [
       "1 cup quinoa, cooked",
@@ -148,7 +148,7 @@ export const mockRecipes: Recipe[] = [
       "Drizzle dressing over the bowl and serve immediately."
     ],
     vibes: ["Healthy", "Budget-Friendly"],
-    dietaryInfo: ["Vegan", "Gluten-Free"],
-    cuisine: "mediterranean"
+    dietary_info: ["Vegan", "Gluten-Free"], // Changed from dietaryInfo
+    cuisine_type: "mediterranean" // Changed from cuisine
   }
 ];
