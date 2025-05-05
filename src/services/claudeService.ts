@@ -1,3 +1,4 @@
+
 import { ParsedReceiptItem } from "@/store/userPreferences";
 import { searchRecipes, SpoonacularRecipe } from "./spoonacularService";
 import { supabase } from "@/integrations/supabase/client";
@@ -326,6 +327,9 @@ export async function generateOptimizedGroceryList(
 // Helper function to generate mock grocery list if the API key is not available
 function generateMockGroceryList(request: GroceryListRequest): OptimizedGroceryResponse {
   // Base implementation is already in the original function, we're just providing a clear fallback
+  
+  // Create a new groceryItems array for this function scope
+  const groceryItems: OptimizedGroceryItem[] = [];
   
   // Base ingredients needed for most cuisines
   const baseItems = [
