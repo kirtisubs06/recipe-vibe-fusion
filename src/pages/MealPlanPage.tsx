@@ -53,6 +53,7 @@ const generateMealPlan = async (cuisines: string[], dietaryPreferences: string[]
         
         // Add ingredients to include if available
         if (currentIngredients.length > 0) {
+          // Properly assign to the includeIngredients property which is defined in the interface
           params.includeIngredients = currentIngredients
             .slice(0, 3) // Limit to a few ingredients to increase chance of matches
             .map(item => item.item)

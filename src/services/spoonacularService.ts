@@ -1,3 +1,4 @@
+
 import { toast } from '@/components/ui/sonner';
 
 // Define types
@@ -29,7 +30,7 @@ export interface SearchRecipesParams {
   cuisine?: string;
   diet?: string;
   intolerances?: string;
-  includeIngredients?: string;
+  includeIngredients?: string; // This property is properly defined here
   excludeIngredients?: string;
   type?: string;
   maxReadyTime?: number;
