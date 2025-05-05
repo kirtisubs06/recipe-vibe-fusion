@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Upload, ArrowLeft, Camera, X, FileText, Clipboard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -177,8 +176,8 @@ const ReceiptUploadPage = () => {
       <main className="container mx-auto p-4 max-w-md">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="upload">Upload Receipt</TabsTrigger>
-            <TabsTrigger value="results">Results</TabsTrigger>
+            <TabsTrigger value="upload" className="text-cheffy-cream">Upload Receipt</TabsTrigger>
+            <TabsTrigger value="results" className="text-cheffy-cream">Results</TabsTrigger>
           </TabsList>
           
           <TabsContent value="upload">
@@ -186,7 +185,7 @@ const ReceiptUploadPage = () => {
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center justify-center space-y-6">
                   <div className="text-center">
-                    <p className="text-muted-foreground mb-6">
+                    <p className="text-cheffy-cream mb-6">
                       Upload a photo of your grocery receipt to extract ingredients
                     </p>
                   </div>
@@ -211,18 +210,18 @@ const ReceiptUploadPage = () => {
                       </div>
                     ) : (
                       <div 
-                        className="border-2 border-dashed border-muted rounded-xl p-8 text-center flex flex-col items-center justify-center cursor-pointer hover:border-cheffy-brown transition-colors"
+                        className="border-2 border-dashed border-cheffy-cream rounded-xl p-8 text-center flex flex-col items-center justify-center cursor-pointer hover:border-cheffy-orange transition-colors"
                         onClick={handleCameraCapture}
                         style={{ minHeight: "200px" }}
                       >
                         <div className="p-4 rounded-full bg-muted mb-4">
-                          <Camera className="h-10 w-10 text-cheffy-brown" />
+                          <Camera className="h-10 w-10 text-cheffy-orange" />
                         </div>
-                        <p className="font-medium text-sm mb-2">Take a photo of your receipt</p>
-                        <p className="text-xs text-muted-foreground mb-2">or</p>
+                        <p className="font-medium text-sm mb-2 text-cheffy-cream">Take a photo of your receipt</p>
+                        <p className="text-xs text-cheffy-cream mb-2">or</p>
                         <label 
                           htmlFor="receipt-file-input"
-                          className="text-cheffy-brown underline cursor-pointer text-sm"
+                          className="text-cheffy-orange underline cursor-pointer text-sm"
                         >
                           Browse files
                         </label>
@@ -239,7 +238,7 @@ const ReceiptUploadPage = () => {
                     
                     {isProcessing && (
                       <div className="p-4 bg-muted/50">
-                        <p className="text-sm font-medium mb-2">Processing receipt...</p>
+                        <p className="text-sm font-medium mb-2 text-cheffy-cream">Processing receipt...</p>
                         <Progress value={progress} className="h-2 bg-muted" />
                       </div>
                     )}
@@ -247,7 +246,7 @@ const ReceiptUploadPage = () => {
 
                   <Button 
                     onClick={handleProcessReceipt} 
-                    className="bg-cheffy-brown hover:bg-cheffy-brown/90 transition-opacity w-full"
+                    className="bg-cheffy-orange hover:bg-cheffy-orange/90 transition-opacity w-full text-white"
                     disabled={!uploadedImage || isProcessing}
                   >
                     {isProcessing ? "Processing..." : (
@@ -267,12 +266,13 @@ const ReceiptUploadPage = () => {
               <CardContent className="pt-6">
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-medium">Extracted Items</h3>
+                    <h3 className="text-lg font-medium text-cheffy-cream">Extracted Items</h3>
                     {parsedItems.length > 0 && (
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={handleCopyToClipboard}
+                        className="border-cheffy-cream text-cheffy-cream hover:bg-cheffy-light-brown/20"
                       >
                         <Clipboard className="h-4 w-4 mr-1" />
                         Copy CSV
@@ -281,34 +281,34 @@ const ReceiptUploadPage = () => {
                   </div>
                   
                   {parsedItems.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
+                    <div className="text-center py-8 text-cheffy-cream">
                       <p>No items extracted yet. Process a receipt first.</p>
                     </div>
                   ) : (
-                    <div className="border rounded-md overflow-hidden">
+                    <div className="border rounded-md overflow-hidden border-cheffy-cream">
                       <table className="w-full text-sm">
                         <thead className="bg-muted">
                           <tr>
-                            <th className="text-left p-2">Item</th>
-                            <th className="text-right p-2">Qty</th>
-                            <th className="text-right p-2">Price</th>
-                            <th className="text-right p-2">Total</th>
+                            <th className="text-left p-2 text-cheffy-cream">Item</th>
+                            <th className="text-right p-2 text-cheffy-cream">Qty</th>
+                            <th className="text-right p-2 text-cheffy-cream">Price</th>
+                            <th className="text-right p-2 text-cheffy-cream">Total</th>
                           </tr>
                         </thead>
                         <tbody>
                           {parsedItems.map((item, i) => (
                             <tr key={i} className={i % 2 ? "bg-muted/20" : ""}>
-                              <td className="p-2">{item.item}</td>
-                              <td className="p-2 text-right">{item.quantity}</td>
-                              <td className="p-2 text-right">${item.unitPrice.toFixed(2)}</td>
-                              <td className="p-2 text-right">${item.total.toFixed(2)}</td>
+                              <td className="p-2 text-cheffy-cream">{item.item}</td>
+                              <td className="p-2 text-right text-cheffy-cream">{item.quantity}</td>
+                              <td className="p-2 text-right text-cheffy-cream">${item.unitPrice.toFixed(2)}</td>
+                              <td className="p-2 text-right text-cheffy-cream">${item.total.toFixed(2)}</td>
                             </tr>
                           ))}
                         </tbody>
                         <tfoot className="bg-muted">
                           <tr>
-                            <td colSpan={3} className="text-right p-2 font-medium">Total:</td>
-                            <td className="p-2 text-right font-medium">
+                            <td colSpan={3} className="text-right p-2 font-medium text-cheffy-cream">Total:</td>
+                            <td className="p-2 text-right font-medium text-cheffy-cream">
                               ${parsedItems.reduce((sum, item) => sum + item.total, 0).toFixed(2)}
                             </td>
                           </tr>
@@ -319,7 +319,7 @@ const ReceiptUploadPage = () => {
                   
                   <Button 
                     onClick={handleSaveToInventory} 
-                    className="w-full bg-cheffy-brown hover:bg-cheffy-brown/90"
+                    className="w-full bg-cheffy-orange hover:bg-cheffy-orange/90 text-white"
                     disabled={parsedItems.length === 0}
                   >
                     Add Items to Inventory
