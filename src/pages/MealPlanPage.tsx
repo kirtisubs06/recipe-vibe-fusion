@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, ShoppingCart, Calendar, Clock, Users, ChevronDown, ChevronUp } from 'lucide-react';
@@ -271,7 +270,7 @@ const MealPlanPage = () => {
                           {dayPlan.recipe.dietaryInfo && dayPlan.recipe.dietaryInfo.slice(0, 2).map((info: string) => (
                             <span 
                               key={info} 
-                              className="px-2 py-0.5 bg-cheffy-olive text-white text-xs rounded-full"
+                              className="px-2 py-0.5 bg-cheffy-olive text-cheffy-cream text-xs rounded-full"
                             >
                               {info}
                             </span>

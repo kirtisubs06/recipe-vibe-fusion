@@ -50,11 +50,11 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
       <div className="p-4 space-y-6">
         <div className="flex justify-between">
           <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-recipe-primary" />
+            <Clock className="h-4 w-4 text-cheffy-brown" />
             <span>{recipe.prepTime}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-recipe-primary" />
+            <Users className="h-4 w-4 text-cheffy-brown" />
             <span>{recipe.servings} servings</span>
           </div>
         </div>
@@ -67,8 +67,8 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
           <h3 className="text-lg font-semibold mb-2">Ingredients</h3>
           <ul className="space-y-2">
             {recipe.ingredients.map((ingredient, idx) => (
-              <li key={idx} className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-recipe-primary"></div>
+              <li key={idx} className="flex items-start gap-3">
+                <div className="h-3 w-3 mt-1.5 rounded-full bg-cheffy-brown flex-shrink-0"></div>
                 <span>{ingredient}</span>
               </li>
             ))}
@@ -80,7 +80,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
           <ol className="space-y-4">
             {recipe.instructions.map((step, idx) => (
               <li key={idx} className="flex gap-4">
-                <div className="bg-recipe-yellow text-black rounded-full w-6 h-6 flex-shrink-0 flex items-center justify-center">
+                <div className="bg-cheffy-brown text-cheffy-cream rounded-full w-6 h-6 flex-shrink-0 flex items-center justify-center">
                   {idx + 1}
                 </div>
                 <p>{step}</p>

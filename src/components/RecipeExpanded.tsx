@@ -63,8 +63,8 @@ const RecipeExpanded: React.FC<RecipeExpandedProps> = ({ recipe, onClose }) => {
             <h3 className="text-lg font-semibold mb-2 text-cheffy-brown">Ingredients</h3>
             <ul className="space-y-2">
               {recipe.ingredients.map((ingredient, idx) => (
-                <li key={idx} className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-cheffy-brown"></div>
+                <li key={idx} className="flex items-start gap-3">
+                  <div className="h-3 w-3 mt-1.5 rounded-full bg-cheffy-brown flex-shrink-0"></div>
                   <span>{ingredient}</span>
                 </li>
               ))}
@@ -94,7 +94,7 @@ const RecipeExpanded: React.FC<RecipeExpandedProps> = ({ recipe, onClose }) => {
                 {recipe.dietary_info.map((info, idx) => (
                   <span 
                     key={idx} 
-                    className="px-2 py-1 bg-cheffy-olive text-white text-xs rounded-full"
+                    className="px-2 py-1 bg-cheffy-olive text-cheffy-cream text-xs rounded-full"
                   >
                     {info}
                   </span>
